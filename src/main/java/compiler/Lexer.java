@@ -1,6 +1,7 @@
 package compiler;
 
-import entity.NFA;
+import entity.GraphFA;
+import entity.MatrixFA;
 import entity.Text;
 import entity.Tokens;
 import exception.InputException;
@@ -15,11 +16,14 @@ public class Lexer {
     public Lexer() {
     }
 
-    public void run(Text text) throws InputException {
+    public void run(Text code, Text grammar) throws InputException {
         Tokens tokens = new Tokens();
-        tokens.separate(text);
-        NFA nfa = new NFA();
-        nfa.init(text);
+        GraphFA graphFA = new GraphFA();
+        MatrixFA matrixFA = new MatrixFA();
+
+        graphFA.init(grammar);
+        matrixFA.init(graphFA);
+        tokens.separate(code, matrixFA);
     }
 
 

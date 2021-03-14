@@ -13,9 +13,9 @@ import java.util.List;
 class Token {
     private int number;
     private String content;
-    private int type;//1->keyword 2->boundary 3->operator 4->number 5->标识符 -1->待定 6->String常量 7->注释
+    private int type;//1->keyword 2->boundary 3->operator 4->number 5->标识符 -1->待定 6->String常量 7->注释 8->错误标识符
 
-    private static final String[] typeDescription = {"待定", "关键字", "界符", "运算符", "数字常量", "标识符", "String常量", "注释"};
+    private static final String[] typeDescription = {"待定", "关键字", "界符", "运算符", "数字常量", "标识符", "String常量", "注释", "错误标识符"};
 
     public Token() {
     }
@@ -340,6 +340,16 @@ public class Tokens {
         }
     }
 
+    public void separateIdentifier(MatrixFA matrixFA) {
+        for (int i = 0; i < tokens.size(); i++) {
+            Token token = tokens.get(i);
+            if (token.getType() != -1) continue;
+            if (matrixFA.check(token.getContent())) token.setType(5);
+            else token.setType(8);
+            tokens.set(i, token);
+        }
+    }
+
     public void showByClass() {
         System.out.println("*************CLASS**************");
         System.out.println("---------keywords----------");
@@ -370,6 +380,10 @@ public class Tokens {
         for (Token token : tokens) {
             if (token.getType() == 7) System.out.println(token.toString());
         }
+        System.out.println("---------wrong----------");
+        for (Token token : tokens) {
+            if (token.getType() == 8) System.out.println(token.toString());
+        }
         System.out.println("---------unclassified----------");
         for (Token token : tokens) {
             if (token.getType() == -1) System.out.println(token.toString());
@@ -385,19 +399,20 @@ public class Tokens {
         System.out.println();
     }
 
-    public void separate(Text text) {
-        this.separateNote(text.getContent());
-        this.separateString();
-        this.separateSpace();
-        this.markKeyword();
-        this.separateBoundary();
-        this.markKeyword();
-        this.separateOperator();
-        this.separateNumber();
-        this.separatePlusOrMinus();
-        this.separateNumber();
-        this.separatePoint();
-        this.showBySequence();
-        //this.showByClass();
+    public void separate(Text text, MatrixFA matrixFA) {
+        separateNote(text.getContent());
+        separateString();
+        separateSpace();
+        markKeyword();
+        separateBoundary();
+        markKeyword();
+        separateOperator();
+        separateNumber();
+        separatePlusOrMinus();
+        separateNumber();
+        separatePoint();
+        separateIdentifier(matrixFA);
+        showBySequence();
+        showByClass();
     }
 }
