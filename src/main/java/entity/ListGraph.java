@@ -1,7 +1,6 @@
 package entity;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -35,8 +34,7 @@ class Vertex {
     }
 }
 
-
-public class ListGraph {
+public class ListGraph implements Graph<Character> {
     //默认第一个点是初态
     private final List<Vertex> vertices;
 
@@ -44,11 +42,16 @@ public class ListGraph {
         vertices = new ArrayList<Vertex>();
     }
 
+    public List<Vertex> getVertices() {
+        return vertices;
+    }
+
+    public Character getFirst(){return vertices.get(0).name;}
 
     /*
     只有右线性的增加 左线性没写
-     */
-    public void addEdge(char thisVertex, char nextVertex, char weight) {
+    */
+    public void addEdge(Character thisVertex, Character nextVertex, Character weight) {
         for (int i = 0; i < vertices.size(); i++) {
             Vertex vertex = vertices.get(i);
             if (vertex.name == thisVertex) {//找到点了
@@ -70,42 +73,18 @@ public class ListGraph {
         return;
     }
 
-
-    //如果ch==顶点 把所有权重与weight相等的点加入res
-    public Set<Character> move(Set<Character> I, char weight) {
-        Set<Character> res = new HashSet<Character>();
-        for (char ch : I) {
-            for (Vertex vertex : vertices) {
-                if (ch == vertex.name) {
-                    for (Edge edge : vertex.edges) {
-                        if (edge.weight == weight) {
-                            res.add(edge.nextVertex);
-                        }
+    public Character nextStatus(Character thisStatus,Character weight){
+        Character res=null;
+        for(Vertex vertex:vertices){
+            if(vertex.name==thisStatus){
+                for(Edge edge:vertex.edges){
+                    if(weight==edge.weight){
+                        res=edge.nextVertex;
                     }
                 }
             }
         }
         return res;
-    }
-
-    public Set<Character> closure(Set<Character> I) {
-        for (char ch : I) {
-            for (Vertex vertex : vertices) {
-                if (ch == vertex.name) {
-                    for (Edge edge : vertex.edges) {
-                        if (edge.weight == '@') {
-                            I.add(edge.nextVertex);
-                        }
-                    }
-                }
-            }
-        }
-        return I;
-    }
-
-    //分两遍 第一遍找有的 第二遍找closure
-    public Set<Character> findNext(Set<Character> I, char weight) {
-        return closure(move(I, weight));
     }
 
     public void show(Set<Character> I) {
@@ -115,7 +94,9 @@ public class ListGraph {
         System.out.println();
     }
 
+
     public void show() {
+        System.out.println("ListGraph show:");
         for (Vertex vertex : vertices) {
             for (Edge edge : vertex.edges) {
                 System.out.println(vertex.name + "->" + edge.nextVertex + ":" + edge.weight);

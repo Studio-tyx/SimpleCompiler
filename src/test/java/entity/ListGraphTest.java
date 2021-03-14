@@ -29,13 +29,13 @@ class ListGraphTest {
         listGraph.addEdge('B','A','b');
         listGraph.addEdge('B','Z','@');
         listGraph.show();
-        Set<Character> I=new HashSet<Character>();
-        I.add('S');
-        I=listGraph.findNext(I,'a');System.out.println("I+a:");
-        listGraph.show(I);
-        I=listGraph.findNext(I,'b');System.out.println("I+b:");
-        listGraph.show(I);
-        I=listGraph.findNext(I,'a');System.out.println("I+a:");
-        listGraph.show(I);
+//        Set<Character> I=new HashSet<Character>();
+//        I.add('S');
+//        I=listGraph.findNext(I,'a');System.out.println("I+a:");
+//        listGraph.show(I);
+//        I=listGraph.findNext(I,'b');System.out.println("I+b:");
+//        listGraph.show(I);
+//        I=listGraph.findNext(I,'a');System.out.println("I+a:");
+//        listGraph.show(I);
     }
 }
