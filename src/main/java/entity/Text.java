@@ -9,14 +9,14 @@ import java.util.List;
 /**
  * @author TYX
  * @name Text
- * @description
- * @time 就是个提醒：行数判断边界是小于 不是小于等于
+ * @description 读取文件封装类
+ * @time 2021/3/8 15:36
  **/
 
 
 public class Text {
-    private int totalLine;
-    private final List<ProcessLine> content;
+    private int totalLine;  //文件总行数
+    private final List<ProcessLine> content;    //文件内容（以ProcessLine行为单位）
 
     /**
      * 构造函数 初始化行数为0
@@ -30,7 +30,7 @@ public class Text {
      * 读取内容
      * 将path文件中的内容读入
      *
-     * @param path 文件目录
+     * @param path 文件路径
      */
     public void init(String path) throws IOException {
         FileReader fileReader = new FileReader(path);
@@ -48,9 +48,9 @@ public class Text {
 
 
     /**
-     * 返回所有代码
+     * 返回文件内容
      *
-     * @return
+     * @return 文件内容
      */
     public List<ProcessLine> getContent() {
         return content;

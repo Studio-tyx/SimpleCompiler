@@ -7,8 +7,13 @@ import java.util.List;
 
 class TextTest {
 
+    /**
+     * 测试文件读入
+     *
+     * @throws IOException 读写异常
+     */
     @Test
-    void name() throws IOException {
+    void testFile() throws IOException {
         Text text = new Text();
         text.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\test.txt");
 //        while(!text.outLine()){
