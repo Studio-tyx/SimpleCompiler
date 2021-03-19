@@ -37,7 +37,8 @@ public class Lexer {
         tokens.markKeyword();
         tokens.separateBoundary();
         tokens.markKeyword();
-        tokens.separateOperator();
+        tokens.separateLogistic();
+        tokens.separateArithmetic();
         tokens.separateNumber();
         tokens.separatePlusOrMinus();
         tokens.separateNumber();

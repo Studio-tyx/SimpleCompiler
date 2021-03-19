@@ -16,7 +16,7 @@ class LexerTest {
         Text code = new Text(), grammar = new Text();
         Lexer lexer = new Lexer();
         code.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\code.txt");
-        grammar.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\grammar2.txt");
+        grammar.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\lexerGrammar2.txt");
         try {
             lexer.run(code, grammar);
         } catch (InputException e) {

@@ -13,9 +13,39 @@ import java.util.List;
 class Token {
     private int number; //行号
     private String content; //单词内容
-    private int type;//1->keyword 2->boundary 3->operator 4->number 5->标识符 -1->待定 6->String常量 7->注释 8->错误标识符
+    private char type;
+    /*
+    a->arithmetic:+ - * /
+    b->boundaries:{ } ( ) [ ] , ; .
+    c->class
+    d
+    e->error identifier:SSS
+    f->for
+    g
+    h
+    i->identifier:main a x b
+    j
+    k->keywords(other):
+    l->logistic:!= == >= <=
+    m
+    n->note //
+    o
+    p->if
+    q->else
+    r->realNumber 1.24
+    s->String const:"xxx"
+    t->type:void boolean char int double float
+    u->unclassified
+    v->visibility:private public protected
+    w->while
+    x
+    y
+    z->return
+     */
 
-    private static final String[] typeDescription = {"待定", "关键字", "界符", "运算符", "数字常量", "标识符", "String常量", "注释", "错误标识符"};
+
+    private static final String[] typeDescription = {"算术运算符","界符","class","d","错误标识符","for","g","h","标识符",
+            "j","其他关键字","逻辑运算符","m","注释","o","p","q","数字常量","String常量","类型","未分类","可视性","while","x","y","return"};
 
     public Token() {
     }
@@ -27,7 +57,7 @@ class Token {
      * @param content 单词内容
      * @param type 单词种类
      */
-    public Token(int number, String content, int type) {
+    public Token(int number, String content, char type) {
         this.number = number;
         this.content = content;
         this.type = type;
@@ -45,7 +75,7 @@ class Token {
         return type;
     }
 
-    public void setType(int type) {
+    public void setType(char type) {
         this.type = type;
     }
 
@@ -63,7 +93,7 @@ class Token {
         return "Token{" +
                 "line number=" + number +
                 ", content='" + content + '\'' +
-                ", type=" + (type == -1 ? typeDescription[0] : typeDescription[type]) +
+                ", type=" + typeDescription[type-'a'] +
                 '}';
     }
 }
@@ -72,14 +102,26 @@ public class Tokens {
     private LinkedList<Token> tokens;   //token信息集合
 
     //关键字常量
-    private static final String[] keywords = {"private", "public", "protected", "class", "new",
-            "return", "if", "else", "for", "while", "try", "catch", "throws", "import", "package",
-            "boolean", "char", "int", "double", "float", "TRUE", "FALSE", "this", "void"};
+    private static final String[] otherKeywords = {"new","try", "catch", "throws", "import", "package","this"};
     //完整"private","protected","public","abstract","class","extends","final","implements",
     // "interface","native","new","static","strictfp","synchronized","transient","volatile",
     // "break","continue","return","do","while","if","else","for","instanceof","switch",
     // "case","default","try","catch","throw","throws","import","package","boolean","byte",
     // "char","double","float","int","long","short","super","this","void","goto","const"
+
+    private static final String[] type={"void","boolean", "char", "int", "double", "float"};//t
+    private static final String[] visibility={"private", "public", "protected"};//v
+    private static final String[] arithmetic={"*","/","="};//a
+    private static final String[] logistic={"!=","==",">=","<="};//l
+    //class->c
+    //while->w
+
+
+
+    /*
+    还不够 要做语法分析就必须要细化
+    keyword要区分类型（）和控制
+     */
 
     //界符常量
     private static final String[] boundaries = {"{", "}", "(", ")", "[", "]", ",", ";"};
@@ -103,12 +145,12 @@ public class Tokens {
      */
     public void separateNote(List<ProcessLine> text) {
         for (ProcessLine pl : text) {
-            Token tmpToken = new Token(pl.getLineNumber(), pl.getLine(), -1);
+            Token tmpToken = new Token(pl.getLineNumber(), pl.getLine(), 'u');
             if (pl.getLine().contains("//")) {
                 String line = pl.getLine();
                 tmpToken.setContent(line.substring(0, line.indexOf("//")));
                 tokens.add(tmpToken);
-                Token addToken = new Token(pl.getLineNumber(), line.substring(line.indexOf("//") + 2), 7);
+                Token addToken = new Token(pl.getLineNumber(), line.substring(line.indexOf("//") + 2), 'n');
                 tokens.add(addToken);
             } else {
                 tokens.add(tmpToken);
@@ -132,12 +174,12 @@ public class Tokens {
                 back = word.substring(word.indexOf("\"") + 1);
                 Token frontToken, backToken;
                 if (!hasQuotation) {//'nn"yy"'
-                    frontToken = new Token(token.getNumber(), front, -1);
-                    backToken = new Token(token.getNumber(), back, 6);
+                    frontToken = new Token(token.getNumber(), front, 'u');
+                    backToken = new Token(token.getNumber(), back, 's');
                     hasQuotation = true;
                 } else {//'yy"nn'
-                    frontToken = new Token(token.getNumber(), "\"" + front + "\"", 6);
-                    backToken = new Token(token.getNumber(), back, -1);
+                    frontToken = new Token(token.getNumber(), "\"" + front + "\"", 's');
+                    backToken = new Token(token.getNumber(), back, 'u');
                     hasQuotation = false;
                 }
                 tokens.remove(token);
@@ -156,7 +198,7 @@ public class Tokens {
     public void separateSpace() {
         for (int i = 0; i < tokens.size(); i++) {
             Token token = tokens.get(i);
-            if (token.getType() == -1) {//unclassified
+            if (token.getType() == 'u') {//unclassified
 //                if(token.getContent().equals("")){
 //                    token.setType(2);
 //                    break;
@@ -172,7 +214,7 @@ public class Tokens {
                 String[] words = line.split("\\s+");
                 tokens.remove(token);
                 for (String word : words) {
-                    tokens.add(i++, new Token(token.getNumber(), word, -1));
+                    tokens.add(i++, new Token(token.getNumber(), word, 'u'));
                 }
                 i--;
             }
@@ -185,7 +227,7 @@ public class Tokens {
     public void separateBoundary() {
         for (int i = 0; i < tokens.size(); i++) {
             Token token = tokens.get(i);
-            if (token.getType() != -1) continue;
+            if (token.getType() != 'u') continue;
             //if(token.getContent().length()==1) continue;
             for (String compare : boundaries) {
                 if (token.getContent().contains(compare)) {
@@ -198,9 +240,9 @@ public class Tokens {
                     i--;
                     for (String tmp : split) {
                         if (tmp.equals(compare)) {
-                            tokens.add(index++, new Token(token.getNumber(), tmp, 2));
+                            tokens.add(index++, new Token(token.getNumber(), tmp, 'b'));
                         } else {
-                            tokens.add(index++, new Token(token.getNumber(), tmp, -1));
+                            tokens.add(index++, new Token(token.getNumber(), tmp, 'u'));
                         }
                     }
                     break;
@@ -214,9 +256,35 @@ public class Tokens {
      */
     public void markKeyword() {
         for (Token token : tokens) {
-            for (String keyword : keywords) {
-                if (token.getContent().equals(keyword)) {
-                    token.setType(1);
+            if(token.getContent().equals("class"))
+                token.setType('c');
+            else if(token.getContent().equals("for"))
+                token.setType('f');
+            else if(token.getContent().equals("while"))
+                token.setType('w');
+            else if(token.getContent().equals("return"))
+                token.setType('z');
+            else if(token.getContent().equals("if"))
+                token.setType('p');
+            else if(token.getContent().equals("else"))
+                token.setType('q');
+            else {
+                for (String keyword : type) {
+                    if (token.getContent().equals(keyword)) {
+                        token.setType('t');
+                        break;
+                    }
+                }
+                for (String keyword : visibility) {
+                    if (token.getContent().equals(keyword)) {
+                        token.setType('t');
+                        break;
+                    }
+                }
+                for (String keyword : otherKeywords) {
+                    if (token.getContent().equals(keyword)) {
+                        token.setType('t');
+                    }
                 }
             }
         }
@@ -226,11 +294,11 @@ public class Tokens {
      * 分离运算符（除了+/-） type=3
      * 必须在分离数字常量之前进行 否则无法分离如"3E+1 == 2+2i"
      */
-    public void separateOperator() {
+    public void separateLogistic() {
         for (int i = 0; i < tokens.size(); i++) {
             Token token = tokens.get(i);
-            if (token.getType() != -1) continue;
-            for (String compare : operators) {
+            if (token.getType() != 'u') continue;
+            for (String compare : logistic) {
                 if (token.getContent().contains(compare)) {
                     String splitUnit = compare;
                     String[] split = token.getContent().split("((?<=" + splitUnit + ")|(?=" + splitUnit + "))");
@@ -239,9 +307,37 @@ public class Tokens {
                     i--;
                     for (String tmp : split) {
                         if (tmp.equals(compare)) {
-                            tokens.add(index++, new Token(token.getNumber(), tmp, 3));
+                            tokens.add(index++, new Token(token.getNumber(), tmp, 'l'));
                         } else {
-                            tokens.add(index++, new Token(token.getNumber(), tmp, -1));
+                            tokens.add(index++, new Token(token.getNumber(), tmp, 'u'));
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * 分离运算符（除了+/-） type=3
+     * 必须在分离数字常量之前进行 否则无法分离如"3E+1 == 2+2i"
+     */
+    public void separateArithmetic() {
+        for (int i = 0; i < tokens.size(); i++) {
+            Token token = tokens.get(i);
+            if (token.getType() != 'u') continue;
+            for (String compare : arithmetic) {
+                if (token.getContent().contains(compare)) {
+                    String splitUnit = compare;
+                    String[] split = token.getContent().split("((?<=" + splitUnit + ")|(?=" + splitUnit + "))");
+                    int index = tokens.indexOf(token);
+                    tokens.remove(token);
+                    i--;
+                    for (String tmp : split) {
+                        if (tmp.equals(compare)) {
+                            tokens.add(index++, new Token(token.getNumber(), tmp, 'a'));
+                        } else {
+                            tokens.add(index++, new Token(token.getNumber(), tmp, 'u'));
                         }
                     }
                     break;
@@ -328,8 +424,8 @@ public class Tokens {
      */
     public void separateNumber() {
         for (Token token : tokens) {
-            if (token.getType() == -1) {
-                if (isNumber(token.getContent())) token.setType(4);
+            if (token.getType() == 'u') {
+                if (isNumber(token.getContent())) token.setType('r');
             }
         }
     }
@@ -342,7 +438,7 @@ public class Tokens {
         String[] plusOrMinus = {"+", "-"};
         for (int i = 0; i < tokens.size(); i++) {
             Token token = tokens.get(i);
-            if (token.getType() != -1) continue;
+            if (token.getType() != 'u') continue;
             if (token.getContent().length() == 1) continue;
             for (String compare : plusOrMinus) {
                 if (token.getContent().contains(compare)) {
@@ -354,9 +450,9 @@ public class Tokens {
                     i--;
                     for (String tmp : split) {
                         if (tmp.equals(compare)) {
-                            tokens.add(index++, new Token(token.getNumber(), tmp, 3));
+                            tokens.add(index++, new Token(token.getNumber(), tmp, 'a'));
                         } else {
-                            tokens.add(index++, new Token(token.getNumber(), tmp, -1));
+                            tokens.add(index++, new Token(token.getNumber(), tmp, 'u'));
                         }
                     }
                     break;
@@ -372,7 +468,7 @@ public class Tokens {
     public void separatePoint() {
         for (int i = 0; i < tokens.size(); i++) {
             Token token = tokens.get(i);
-            if (token.getType() != -1) continue;
+            if (token.getType() != 'u') continue;
             if (token.getContent().length() == 1) continue;
             if (token.getContent().contains(".")) {
                 String[] split = token.getContent().split("((?<=\\.)|(?=\\.))");
@@ -381,9 +477,9 @@ public class Tokens {
                 i--;
                 for (String tmp : split) {
                     if (tmp.equals(".")) {
-                        tokens.add(index++, new Token(token.getNumber(), tmp, 2));
+                        tokens.add(index++, new Token(token.getNumber(), tmp, 'b'));
                     } else {
-                        tokens.add(index++, new Token(token.getNumber(), tmp, -1));
+                        tokens.add(index++, new Token(token.getNumber(), tmp, 'u'));
                     }
                 }
                 break;
@@ -400,9 +496,9 @@ public class Tokens {
     public void separateIdentifier(MatrixFA matrixFA) {
         for (int i = 0; i < tokens.size(); i++) {
             Token token = tokens.get(i);
-            if (token.getType() != -1) continue;
-            if (matrixFA.check(token.getContent())) token.setType(5);
-            else token.setType(8);
+            if (token.getType() != 'u') continue;
+            if (matrixFA.check(token.getContent())) token.setType('i');
+            else token.setType('e');
             tokens.set(i, token);
         }
     }
@@ -414,39 +510,52 @@ public class Tokens {
         System.out.println("*************CLASS**************");
         System.out.println("---------keywords----------");
         for (Token token : tokens) {
-            if (token.getType() == 1) System.out.println(token.toString());
+            switch (token.getType()){
+                case 'c':
+                case 'f':
+                case 'k':
+                case 'p':
+                case 'q':
+                case 't':
+                case 'v':
+                case 'w':
+                    System.out.println(token.toString());
+                    break;
+                default:
+            }
         }
         System.out.println("---------boundaries----------");
         for (Token token : tokens) {
-            if (token.getType() == 2) System.out.println(token.toString());
+            if (token.getType() == 'b') System.out.println(token.toString());
         }
         System.out.println("---------operators----------");
         for (Token token : tokens) {
-            if (token.getType() == 3) System.out.println(token.toString());
+            if (token.getType() == 'a'||token.getType() == 'l')
+                System.out.println(token.toString());
         }
         System.out.println("---------numbers----------");
         for (Token token : tokens) {
-            if (token.getType() == 4) System.out.println(token.toString());
+            if (token.getType() == 'r') System.out.println(token.toString());
         }
         System.out.println("---------identifiers----------");
         for (Token token : tokens) {
-            if (token.getType() == 5) System.out.println(token.toString());
+            if (token.getType() == 'i') System.out.println(token.toString());
         }
         System.out.println("---------\"****\"----------");
         for (Token token : tokens) {
-            if (token.getType() == 6) System.out.println(token.toString());
+            if (token.getType() == 's') System.out.println(token.toString());
         }
         System.out.println("---------//----------");
         for (Token token : tokens) {
-            if (token.getType() == 7) System.out.println(token.toString());
+            if (token.getType() == 'n') System.out.println(token.toString());
         }
         System.out.println("---------wrong----------");
         for (Token token : tokens) {
-            if (token.getType() == 8) System.out.println(token.toString());
+            if (token.getType() == 'e') System.out.println(token.toString());
         }
         System.out.println("---------unclassified----------");
         for (Token token : tokens) {
-            if (token.getType() == -1) System.out.println(token.toString());
+            if (token.getType() == 'u') System.out.println(token.toString());
         }
         System.out.println();
     }

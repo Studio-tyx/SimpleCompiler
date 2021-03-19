@@ -1,0 +1,17 @@
+S->vci{M}
+M->ti(P){AZ}M
+M->@
+P->ti,P
+P->@
+A->FA
+F->w(ilr){A}
+F->i=NaN;
+N=i
+N=r
+F->tD;
+D->i
+D->i,N
+A->@
+Z->zi
+Z->@
+
