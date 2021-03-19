@@ -1,6 +1,7 @@
 package entity;
 
 import exception.InputException;
+import tool.CharacterTools;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -20,67 +21,20 @@ MatrixFA的状态类型为integer（防止character状态类型不够用）
 
 /**
  * @author TYX
- * @name GraphFA
+ * @name LexerNFA
  * @description NFA（用邻接表实现了图结构，状态类型均为character）
- * @time  2021/3/14 14:17
+ * @time 2021/3/14 14:17
  **/
 
-/**
- * 边
- */
-class Edge {
-    char nextVertex;
-    char weight;
 
-    public Edge() {
-    }
-
-    public Edge(char nextVertex, char weight) {
-        this.weight = weight;
-        this.nextVertex = nextVertex;
-    }
-}
-
-/**
- * 顶点
- */
-class Vertex {
-    char name;
-    List<Edge> edges;
-
-    public Vertex(char name, List<Edge> edges) {
-        this.name = name;
-        this.edges = edges;
-    }
-}
-
-public class GraphFA {
-    private List<Vertex> vertices;  //图结构
+public class LexerNFA {
+    private CharacterGraph graph;
     private Set<Character> terminals;   //终结符集合
     private Character finalStatus;  //终态集合
 
-    public GraphFA() {
+    public LexerNFA() {
     }
 
-    /**
-     * 是否为大写字符
-     *
-     * @param ch 需要判断的字符
-     * @return 是否为大写
-     */
-    public boolean isUpper(char ch) {
-        return (ch >= 'A' && ch <= 'Z');
-    }
-
-    /**
-     * 是否为小写字符
-     *
-     * @param ch 需要判断的字符
-     * @return 是否为小写
-     */
-    public boolean isLower(char ch) {
-        return ((ch >= 'a' && ch <= 'z') || ch == '@');
-    }
 
     /**
      * 根据读入的文本生成NFA（根据文本结构判断是左线性还是右线性）
@@ -95,7 +49,7 @@ public class GraphFA {
             if (line.length() == 4) {
 
             } else if (line.length() == 5) {
-                if (isLower(line.charAt(3))) {
+                if (CharacterTools.isLower(line.charAt(3))) {
                     //isRight=true;
                     isLeft = false;
                 } else {
@@ -119,7 +73,8 @@ public class GraphFA {
      * @throws InputException 输入异常
      */
     public void initRight(Text text) throws InputException {
-        vertices = new ArrayList<Vertex>();
+        graph=new CharacterGraph();
+        //List<Vertex<Character>> vertices=graph.getVertices();
         terminals = new HashSet<Character>();
         finalStatus = '$';
         for (ProcessLine processLine : text.getContent()) {
@@ -134,17 +89,17 @@ public class GraphFA {
                 String[] afterSplit = line.split("->");
                 String former = afterSplit[0], latter = afterSplit[1];
                 if (former.length() == 1) {
-                    if (isUpper(former.charAt(0))) {
+                    if (CharacterTools.isUpper(former.charAt(0))) {
                         if (latter.length() == 1) {
-                            if (isLower(latter.charAt(0))) {
+                            if (CharacterTools.isLower(latter.charAt(0))) {
                                 isLegal = true;
-                                addEdge(former.charAt(0), '$', latter.charAt(0));
+                                graph.addEdge(former.charAt(0), '$', latter.charAt(0));
                                 if (latter.charAt(0) != '@') terminals.add(latter.charAt(0));
                             }
                         } else if (latter.length() == 2) {
-                            if (isLower(latter.charAt(0)) && isUpper(latter.charAt(1))) {
+                            if (CharacterTools.isLower(latter.charAt(0)) && CharacterTools.isUpper(latter.charAt(1))) {
                                 isLegal = true;
-                                addEdge(former.charAt(0), latter.charAt(1), latter.charAt(0));
+                                graph.addEdge(former.charAt(0), latter.charAt(1), latter.charAt(0));
                                 if (latter.charAt(0) != '@') terminals.add(latter.charAt(0));
                             }
                         }
@@ -164,7 +119,8 @@ public class GraphFA {
      * @throws InputException 输入格式初始化
      */
     public void initLeft(Text text) throws InputException {
-        vertices = new ArrayList<Vertex>();
+        graph=new CharacterGraph();
+        //List<Vertex<Character>> vertices=graph.getVertices();
         terminals = new HashSet<Character>();
         finalStatus = text.getContent().get(0).getLine().charAt(0);
         for (ProcessLine processLine : text.getContent()) {
@@ -179,17 +135,17 @@ public class GraphFA {
                 String[] afterSplit = line.split("->");
                 String former = afterSplit[0], latter = afterSplit[1];
                 if (former.length() == 1) {
-                    if (isUpper(former.charAt(0))) {
+                    if (CharacterTools.isUpper(former.charAt(0))) {
                         if (latter.length() == 1) {
-                            if (isLower(latter.charAt(0))) {
+                            if (CharacterTools.isLower(latter.charAt(0))) {
                                 isLegal = true;
-                                addEdge('$', former.charAt(0), latter.charAt(0));
+                                graph.addEdge('$', former.charAt(0), latter.charAt(0));
                                 if (latter.charAt(0) != '@') terminals.add(latter.charAt(0));
                             }
                         } else if (latter.length() == 2) {
-                            if (isUpper(latter.charAt(0)) && isLower(latter.charAt(1))) {
+                            if (CharacterTools.isUpper(latter.charAt(0)) && CharacterTools.isLower(latter.charAt(1))) {
                                 isLegal = true;
-                                addEdge(latter.charAt(0), former.charAt(0), latter.charAt(1));
+                                graph.addEdge(latter.charAt(0), former.charAt(0), latter.charAt(1));
                                 if (latter.charAt(0) != '@') terminals.add(latter.charAt(1));
                             }
                         }
@@ -202,8 +158,8 @@ public class GraphFA {
         }
     }
 
-    public List<Vertex> getVertices() {
-        return vertices;
+    public Character getFirstElement(){
+        return graph.getVertices().get(0).name;
     }
 
     public Set<Character> getTerminals() {
@@ -214,88 +170,8 @@ public class GraphFA {
         return finalStatus;
     }
 
-    /**
-     * NFA->DFA 根据读入的终结符寻找下一个状态
-     *
-     * @param I 当前状态集
-     * @param weight 输入的终结符
-     * @return 下一个状态的集合
-     */
-    public Set<Character> findNext(Set<Character> I, char weight) {
-        return closure(move(I, weight));
-    }
-
-    /**
-     * 将终结符边加入到状态集
-     *
-     * @param I 当前状态集
-     * @param weight 读入的终结符
-     * @return 加入下一条边之后到达的状态
-     */
-    public Set<Character> move(Set<Character> I, char weight) {
-        Set<Character> res = new HashSet<Character>();
-        for (char ch : I) {
-            for (Vertex vertex : vertices) {
-                if (ch == vertex.name) {
-                    for (Edge edge : vertex.edges) {
-                        if (edge.weight == weight) {
-                            res.add(edge.nextVertex);
-                        }
-                    }
-                }
-            }
-        }
-        return res;
-    }
-
-    /**
-     * epsilon-closure 寻找当前状态的闭包
-     *
-     * @param I 当前状态
-     * @return 状态的闭包（加入epsilon边可以到达的状态集）
-     */
-    public Set<Character> closure(Set<Character> I) {
-        for (char ch : I) {
-            for (Vertex vertex : vertices) {
-                if (ch == vertex.name) {
-                    for (Edge edge : vertex.edges) {
-                        if (edge.weight == '@') {
-                            I.add(edge.nextVertex);
-                        }
-                    }
-                }
-            }
-        }
-        return I;
-    }
-
-    /**
-     * 图的构造（新增一条边）
-     *
-     * @param thisVertex 当前结点
-     * @param nextVertex 下一结点
-     * @param weight 边的权重
-     */
-    public void addEdge(Character thisVertex, Character nextVertex, Character weight) {
-        for (int i = 0; i < vertices.size(); i++) {
-            Vertex vertex = vertices.get(i);
-            if (vertex.name == thisVertex) {//找到点了
-                for (Edge edge : vertex.edges) {
-                    if (edge.nextVertex == nextVertex && edge.weight == weight) return;//完全一样就返回
-                }
-                //加边
-                Edge newEdge = new Edge(nextVertex, weight);
-                vertex.edges.add(newEdge);
-                vertices.set(i, vertex);
-                return;
-            }
-        }
-        Edge newEdge = new Edge(nextVertex, weight);
-        List<Edge> edges = new ArrayList<Edge>();
-        edges.add(newEdge);
-        Vertex newVertex = new Vertex(thisVertex, edges);
-        vertices.add(newVertex);
-        return;
+    public CharacterGraph getGraph() {
+        return graph;
     }
 
     /**
@@ -303,8 +179,8 @@ public class GraphFA {
      */
     public void showNFA() {
         System.out.println("-------------NFA--------------");
-        for (Vertex vertex : vertices) {
-            for (Edge edge : vertex.edges) {
+        for (Vertex<Character,Character> vertex : graph.getVertices()) {
+            for (Edge<Character,Character> edge : vertex.edges) {
                 System.out.println(vertex.name + "->" + edge.nextVertex + ":" + edge.weight);
             }
         }

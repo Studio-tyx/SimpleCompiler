@@ -491,13 +491,13 @@ public class Tokens {
      * 分离标识符（识别标识符）
      * 标识符符合文法则type=5 否则type=8
      *
-     * @param matrixFA 文法
+     * @param lexerDFA 文法
      */
-    public void separateIdentifier(MatrixFA matrixFA) {
+    public void separateIdentifier(LexerDFA lexerDFA) {
         for (int i = 0; i < tokens.size(); i++) {
             Token token = tokens.get(i);
             if (token.getType() != 'u') continue;
-            if (matrixFA.check(token.getContent())) token.setType('i');
+            if (lexerDFA.check(token.getContent())) token.setType('i');
             else token.setType('e');
             tokens.set(i, token);
         }

@@ -4,11 +4,11 @@ import java.util.*;
 
 /**
  * @author TYX
- * @name MatrixFA
+ * @name LexerDFA
  * @description DFA（状态用表格展示）
  * @time 2021/3/14 14:51
  **/
-public class MatrixFA {
+public class LexerDFA {
     private int[][] matrix; //状态转移矩阵（不是邻接矩阵）
     private int statusNumber = 0;   //状态数（利于状态转移矩阵确定边界）
     private List<Character> terminalLink;   //NFA终结符与DFA终结符的对应关系（NFA终结符为character DFA为便于数组寻数 类型为int）
@@ -28,34 +28,34 @@ public class MatrixFA {
 
     /**
      * NFA->DFA
-     * @param graphFA NFA
+     * @param lexerNFA NFA
      */
-    public void init(GraphFA graphFA) {
+    public void init(LexerNFA lexerNFA) {
         List<Set<Character>> statusMap = new ArrayList<Set<Character>>();   //DFA状态与NFA子集的对应关系 int<->set<Character>
         terminals = new HashSet<Integer>();
         terminalLink = new ArrayList<Character>();
 
         //NFA终结符与DFA状态转移矩阵表头的对应关系初始化
-        for (Object ch : graphFA.getTerminals()) {
+        for (Object ch : lexerNFA.getTerminals()) {
             terminalLink.add((Character) ch);
         }
 
         //初态T0
         matrix = new int[101][terminalLink.size()];
         Set<Character> start = new HashSet();
-        start.add(graphFA.getVertices().get(0).name);
-        start = graphFA.closure(start);
+        start.add(lexerNFA.getFirstElement());
+        start = lexerNFA.getGraph().closure(start);
         statusMap.add(start);
         for (Character ch : start) {
-            if (ch == graphFA.getFinalStatus()) terminals.add(statusMap.indexOf(start));
+            if (ch == lexerNFA.getFinalStatus()) terminals.add(statusMap.indexOf(start));
         }
 
         int maxStatus = 0;  //DFA总状态数
         for (int i = 0; i <= maxStatus; i++) {
-            Iterator<Character> it = graphFA.getTerminals().iterator();
+            Iterator<Character> it = lexerNFA.getTerminals().iterator();
             while (it.hasNext()) {
                 Character character = it.next();
-                Set<Character> newSet = graphFA.findNext(statusMap.get(i), character);  //找closure
+                Set<Character> newSet = lexerNFA.getGraph().findNext(statusMap.get(i), character);  //找closure
                 if (newSet.isEmpty()) {
                     addEdge(i, -1, terminalLink.indexOf(character));
                     continue;
@@ -72,7 +72,7 @@ public class MatrixFA {
                     statusMap.add(newSet);  //新增状态
                     addEdge(i, statusMap.indexOf(newSet), terminalLink.indexOf(character)); //状态转移矩阵加边
                     for (Character DFAElement : newSet) {
-                        if (DFAElement == graphFA.getFinalStatus()) {   //DFA终态新增
+                        if (DFAElement == lexerNFA.getFinalStatus()) {   //DFA终态新增
                             terminals.add(statusMap.indexOf(newSet));
                             break;
                         }
@@ -103,20 +103,6 @@ public class MatrixFA {
             if (status == t) return true;
         }
         return false;
-    }
-
-    /**
-     * 集合展示 便于输出
-     *
-     * @param set 集合
-     * @param <T> 指定状态
-     */
-    public <T> void show(Set<T> set) {
-        System.out.println("----set----------");
-        for (T t : set) {
-            System.out.print(t + ",");
-        }
-        System.out.println("\n---------------");
     }
 
     /**

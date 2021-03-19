@@ -1,7 +1,7 @@
 package compiler;
 
-import entity.GraphFA;
-import entity.MatrixFA;
+import entity.LexerDFA;
+import entity.LexerNFA;
 import entity.Text;
 import entity.Tokens;
 import exception.InputException;
@@ -25,11 +25,11 @@ public class Lexer {
      */
     public void run(Text code, Text grammar) throws InputException {
         Tokens tokens = new Tokens();
-        GraphFA graphFA = new GraphFA();
-        MatrixFA matrixFA = new MatrixFA();
+        LexerNFA lexerNFA = new LexerNFA();
+        LexerDFA lexerDFA = new LexerDFA();
 
-        graphFA.init(grammar);
-        matrixFA.init(graphFA);
+        lexerNFA.init(grammar);
+        lexerDFA.init(lexerNFA);
 
         tokens.separateNote(code.getContent());
         tokens.separateString();
@@ -43,7 +43,7 @@ public class Lexer {
         tokens.separatePlusOrMinus();
         tokens.separateNumber();
         tokens.separatePoint();
-        tokens.separateIdentifier(matrixFA);
+        tokens.separateIdentifier(lexerDFA);
         tokens.showBySequence();
         tokens.showByClass();
 
