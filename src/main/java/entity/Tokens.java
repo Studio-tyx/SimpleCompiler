@@ -44,8 +44,8 @@ class Token {
      */
 
 
-    private static final String[] typeDescription = {"算术运算符","界符","class","d","错误标识符","for","g","h","标识符",
-            "j","其他关键字","逻辑运算符","m","注释","o","p","q","数字常量","String常量","类型","未分类","可视性","while","x","y","return"};
+    private static final String[] typeDescription = {"算术运算符", "界符", "class", "d", "错误标识符", "for", "g", "h", "标识符",
+            "j", "其他关键字", "逻辑运算符", "m", "注释", "o", "p", "q", "数字常量", "String常量", "类型", "未分类", "可视性", "while", "x", "y", "return"};
 
     public Token() {
     }
@@ -53,9 +53,9 @@ class Token {
     /**
      * 构造器
      *
-     * @param number 行号
+     * @param number  行号
      * @param content 单词内容
-     * @param type 单词种类
+     * @param type    单词种类
      */
     public Token(int number, String content, char type) {
         this.number = number;
@@ -93,26 +93,26 @@ class Token {
         return "Token{" +
                 "line number=" + number +
                 ", content='" + content + '\'' +
-                ", type=" + typeDescription[type-'a'] +
+                ", type=" + typeDescription[type - 'a'] +
                 '}';
     }
 }
 
 public class Tokens {
-    private LinkedList<Token> tokens;   //token信息集合
+    private final LinkedList<Token> tokens;   //token信息集合
 
     //关键字常量
-    private static final String[] otherKeywords = {"new","try", "catch", "throws", "import", "package","this"};
+    private static final String[] otherKeywords = {"new", "try", "catch", "throws", "import", "package", "this"};
     //完整"private","protected","public","abstract","class","extends","final","implements",
     // "interface","native","new","static","strictfp","synchronized","transient","volatile",
     // "break","continue","return","do","while","if","else","for","instanceof","switch",
     // "case","default","try","catch","throw","throws","import","package","boolean","byte",
     // "char","double","float","int","long","short","super","this","void","goto","const"
 
-    private static final String[] type={"void","boolean", "char", "int", "double", "float"};//t
-    private static final String[] visibility={"private", "public", "protected"};//v
-    private static final String[] arithmetic={"*","/","="};//a
-    private static final String[] logistic={"!=","==",">=","<="};//l
+    private static final String[] type = {"void", "boolean", "char", "int", "double", "float"};//t
+    private static final String[] visibility = {"private", "public", "protected"};//v
+    private static final String[] arithmetic = {"*", "/", "="};//a
+    private static final String[] logistic = {"!=", "==", ">=", "<="};//l
     //class->c
     //while->w
 
@@ -256,17 +256,17 @@ public class Tokens {
      */
     public void markKeyword() {
         for (Token token : tokens) {
-            if(token.getContent().equals("class"))
+            if (token.getContent().equals("class"))
                 token.setType('c');
-            else if(token.getContent().equals("for"))
+            else if (token.getContent().equals("for"))
                 token.setType('f');
-            else if(token.getContent().equals("while"))
+            else if (token.getContent().equals("while"))
                 token.setType('w');
-            else if(token.getContent().equals("return"))
+            else if (token.getContent().equals("return"))
                 token.setType('z');
-            else if(token.getContent().equals("if"))
+            else if (token.getContent().equals("if"))
                 token.setType('p');
-            else if(token.getContent().equals("else"))
+            else if (token.getContent().equals("else"))
                 token.setType('q');
             else {
                 for (String keyword : type) {
@@ -510,7 +510,7 @@ public class Tokens {
         System.out.println("*************CLASS**************");
         System.out.println("---------keywords----------");
         for (Token token : tokens) {
-            switch (token.getType()){
+            switch (token.getType()) {
                 case 'c':
                 case 'f':
                 case 'k':
@@ -530,7 +530,7 @@ public class Tokens {
         }
         System.out.println("---------operators----------");
         for (Token token : tokens) {
-            if (token.getType() == 'a'||token.getType() == 'l')
+            if (token.getType() == 'a' || token.getType() == 'l')
                 System.out.println(token.toString());
         }
         System.out.println("---------numbers----------");

@@ -1,7 +1,5 @@
 package entity;
 
-import tool.ShowTools;
-
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -58,10 +56,10 @@ public class Text {
         return content;
     }
 
-    public List<ProcessLine> getStartWith(Character start){
-        List<ProcessLine> res=new ArrayList<ProcessLine>();
-        for(ProcessLine processLine:content){
-            if(processLine.getLine().charAt(0)==start){
+    public List<ProcessLine> getStartWith(Character start) {
+        List<ProcessLine> res = new ArrayList<ProcessLine>();
+        for (ProcessLine processLine : content) {
+            if (processLine.getLine().charAt(0) == start) {
                 res.add(processLine);
             }
         }

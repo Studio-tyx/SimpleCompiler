@@ -1,9 +1,11 @@
 package entity;
 
 import tool.CharacterTools;
-import tool.ShowTools;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * @author TYX
@@ -12,46 +14,189 @@ import java.util.*;
  * @time 2021/3/19 10:22
  **/
 public class ParseDFA {
-    /*
-    逻辑：
-        读文法
-            封装成LRLine：开始符+内容+尾巴
-            有一些什么样的函数呢：
-                //set自身求闭包->下一个是大写字符 则加入它开头的String（加入的时候注意尾巴）
-                //求尾巴->给定一个LRLine和text 根据大写字符后面有没有 分类//A->a·Bb,a/e   B->·c,e  e:如果b有东西的话 就用b b没东西 就用a/e
-                总共是一个Closure（Set<LRLine>）
-                还有一个move 移动·
-            对于每个set的时候 先插入·将其加入set 然后根据·后面的值去寻找下一个要加入set的句子
-        构造DFA->goto表
-        读tokens
-        checkParse
-     */
-    /*
-    2021/03/19 20:11
-    我觉得SetLRLineGraph和ParseDFA的结构还不是很明确
-    感觉有点混在一起了 那几个函数可以再仔细考虑一下应该放在哪里
+    private LinkGraph<Set<LRLine>, Character> graph;
+    private Text text;
+    private List<Set<LRLine>> status;
 
-    然后今天的话
-    目前的结构是这样的 大概把图结构单独做成泛型
-    这样词法分析和语法分析都可以继续用这个图结构
-    然后把基于Character实现的图结构和基于Set<LRLine>实现的图结构分开
-    都做成图的子类 这样这两个类的findNext方法就具有重载性质了
-
-    我还得感谢最近学的软件设计模式emmm但是我觉得用的也不太好
-    正经的话应该要把LinkedGraph做成接口 但是我感觉还是有一些共同代码 做成泛型可能更好一些
-
-    晚上做了move和closure函数 move函数测试完了 closure还没写完
-    有点乱
-     */
-
-    LinkGraph<Set<LRLine>,Character> graph;
-
-    public void createGraph(Text text){
-        graph=new LinkGraph<Set<LRLine>,Character>();
-        LRLine firstLR=new LRLine('%',"·S",new HashSet<Character>('#'),0);
-
+    public LinkGraph<Set<LRLine>, Character> getGraph() {
+        return graph;
     }
 
+    public List<Set<LRLine>> getStatus() {
+        return status;
+    }
+
+    public Text getText() {
+        return text;
+    }
+
+    /*
+    还有空格的处理
+     */
+    public void createGraph(Text text) {
+        this.text = text;
+        this.graph = new LinkGraph<Set<LRLine>, Character>();
+        this.status = new ArrayList<Set<LRLine>>();
+
+        Set<Character> tmpSet = new HashSet<Character>();
+        tmpSet.add('#');
+        LRLine firstLR = new LRLine('%', "·S", tmpSet, 0);
+        Set<LRLine> lrLineSet = new HashSet<LRLine>();
+        lrLineSet.add(firstLR);
+        lrLineSet = closure(lrLineSet);
+        status.add(lrLineSet);
+        for (int i = 0; i < status.size(); i++) {
+            Set<LRLine> set = status.get(i);
+            if (!moveEnd(set)) {
+                for (Character character : findNextChar(set)) {
+                    Set<LRLine> newSet = findNextStatus(set, character);
+                    graph.addEdge(set, newSet, character);
+                    if(existSet(status,newSet)){
+                    } else status.add(newSet);
+                }
+            }
+        }
+        graph.show();
+    }
+
+
+    /**
+     * @param I      当前状态集
+     * @param weight 输入的终结符
+     * @return 下一个状态的集合
+     */
+    public Set<LRLine> findNextStatus(Set<LRLine> I, Character weight) {
+        return closure(move(I, weight));
+    }
+
+    public Set<Character> findNextChar(Set<LRLine> I) {
+        Set<Character> res = new HashSet<Character>();
+        for (LRLine lrLine : I) {
+            String content = lrLine.getContent();
+            if (content.indexOf("·") != content.length() - 1) {
+                res.add(content.charAt(content.indexOf("·") + 1));
+            }
+        }
+        return res;
+    }
+
+    public Set<Character> findFirstSet(String production) {//production="aBc"/"BC" return set<a,b,..>
+        Set<Character> res = new HashSet<Character>();
+        Character first = production.charAt(0);
+        if (CharacterTools.isLower(first)||CharacterTools.isPunctuation(first)) {
+            res.add(first);
+        } else {
+            List<ProcessLine> start = text.getStartWith(first);
+            for (ProcessLine processLine : start) {
+                Character character = processLine.getLine().charAt(3);
+                if (CharacterTools.isLower(character)||CharacterTools.isPunctuation(first)) res.add(character);
+                else res.addAll(findFirstSet(processLine.getLine().substring(3)));
+            }
+        }
+        return res;
+    }
+
+    /**
+     * 将终结符边加入到状态集
+     *
+     * @param I      当前状态集
+     * @param weight 读入的终结符
+     * @return 加入下一条边之后到达的状态
+     */
+    public Set<LRLine> move(Set<LRLine> I, Character weight) {
+        Set<LRLine> res = new HashSet<LRLine>();
+        for (LRLine lrLine : I) {
+            LRLine tmpLine = new LRLine(lrLine);
+            int index = lrLine.getContent().indexOf('·');
+            if (index + 1 == lrLine.getContent().length()) continue;
+            Character tmp = lrLine.getContent().charAt(index + 1);
+            if (tmp == weight) {
+                StringBuilder stringBuilder = new StringBuilder(lrLine.getContent());
+                stringBuilder.setCharAt(index, tmp);
+                stringBuilder.setCharAt(index + 1, '·');
+                tmpLine.setContent(stringBuilder.toString());
+                res.add(tmpLine);
+            }
+        }
+        return res;
+    }
+
+    /**
+     * epsilon-closure 寻找当前状态的闭包
+     *
+     * @param I 当前状态
+     * @return 状态的闭包（加入epsilon边可以到达的状态集）
+     */
+    public Set<LRLine> closure(Set<LRLine> I) {
+        List<LRLine> plus = new ArrayList<LRLine>();
+        for (LRLine lrLine : I) {
+            plus.add(lrLine);
+        }
+        int formerSize = plus.size() - 1;
+        while (plus.size() > formerSize) {
+            formerSize = plus.size();
+            for (int i = 0; i < plus.size(); i++) {
+                LRLine lrLine = plus.get(i);
+                int index = lrLine.getContent().indexOf('·');
+                if (lrLine.getContent().length() == index + 1) continue;
+                Character tmp = lrLine.getContent().charAt(index + 1);
+                if (CharacterTools.isUpper(tmp)) {
+                    List<ProcessLine> newLines = text.getStartWith(tmp);
+                    for (ProcessLine processLine : newLines) {
+                        LRLine newLine = new LRLine(processLine);
+                        if (lrLine.getContent().length() == index + 2) {//S->·A
+                            newLine.setForwardSearch(lrLine.getForwardSearch());
+                        } else {//S->·Aa
+                            newLine.setForwardSearch(findFirstSet(lrLine.getContent().substring(index + 2)));
+                        }
+                        if (!existLRLine(plus, newLine)) plus.add(newLine);
+                    }
+                }
+            }
+        }
+        return new HashSet<LRLine>(plus);
+    }
+
+    public boolean existLRLine(List<LRLine> set, LRLine lrLine) {
+        for (LRLine line : set) {
+            //内容相等
+            if (line.getContent().equals(lrLine.getContent()) && line.getStart().equals(lrLine.getStart())
+                    && line.getProductionNumber() == lrLine.getProductionNumber()
+                    && line.getForwardSearch().equals(lrLine.getForwardSearch())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean existSet(List<Set<LRLine>> list,Set<LRLine> other){
+        for(Set<LRLine> set:list){
+            if(setEquals(other,set))return true;
+        }
+        return false;
+    }
+
+    public boolean setEquals(Set<LRLine> one,Set<LRLine> other){
+        if(one.size()!=other.size())return false;
+        int count=0;
+        for(LRLine line1:one){
+            for(LRLine line2:other){
+                if(line1.equals(line2))count++;
+            }
+        }
+        if(count==one.size())return true;
+        else return false;
+    }
+
+    public boolean moveEnd(Set<LRLine> set) {
+        boolean res = true;
+        for (LRLine lrLine : set) {
+            if (lrLine.getContent().indexOf("·") == lrLine.getContent().length() - 1) {
+
+            } else res = false;
+        }
+        return res;
+    }
 
 
 

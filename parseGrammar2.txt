@@ -1,6 +1,5 @@
-S->Ap
-S->Bp
-A->a
-A->cA
-B->b
-B->dB
+S->aAd
+S->bAc
+S->aec
+S->bed
+A->e

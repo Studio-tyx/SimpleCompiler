@@ -19,7 +19,7 @@ public class LexerDFA {
      *
      * @param thisVertex 当前结点
      * @param nextVertex 下一结点
-     * @param weight 边的权重
+     * @param weight     边的权重
      */
     public void addEdge(Integer thisVertex, Integer nextVertex, Integer weight) {
         matrix[thisVertex][weight] = nextVertex;
@@ -28,6 +28,7 @@ public class LexerDFA {
 
     /**
      * NFA->DFA
+     *
      * @param lexerNFA NFA
      */
     public void init(LexerNFA lexerNFA) {
@@ -44,7 +45,7 @@ public class LexerDFA {
         matrix = new int[101][terminalLink.size()];
         Set<Character> start = new HashSet();
         start.add(lexerNFA.getFirstElement());
-        start = lexerNFA.getGraph().closure(start);
+        start = lexerNFA.closure(start);
         statusMap.add(start);
         for (Character ch : start) {
             if (ch == lexerNFA.getFinalStatus()) terminals.add(statusMap.indexOf(start));
@@ -55,7 +56,7 @@ public class LexerDFA {
             Iterator<Character> it = lexerNFA.getTerminals().iterator();
             while (it.hasNext()) {
                 Character character = it.next();
-                Set<Character> newSet = lexerNFA.getGraph().findNext(statusMap.get(i), character);  //找closure
+                Set<Character> newSet = lexerNFA.findNext(statusMap.get(i), character);  //找closure
                 if (newSet.isEmpty()) {
                     addEdge(i, -1, terminalLink.indexOf(character));
                     continue;

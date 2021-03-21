@@ -6,8 +6,8 @@ P->@
 A->FA
 F->w(ilr){A}
 F->i=NaN;
-N=i
-N=r
+N->i
+N->r
 F->tD;
 D->i
 D->i,N

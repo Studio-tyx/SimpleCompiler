@@ -1,6 +1,5 @@
 package entity;
 
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -10,10 +9,10 @@ import java.util.Set;
  * @time 2021/3/19 14:19
  **/
 public class LRLine {
-    Character start;
-    String content;
-    Set<Character> forwardSearch;
-    int productionNumber;
+    private final Character start;
+    private String content;
+    private Set<Character> forwardSearch;
+    private final int productionNumber;
 
     public LRLine(Character start, String content, Set<Character> forwardSearch, int productionNumber) {
         this.start = start;
@@ -22,10 +21,36 @@ public class LRLine {
         this.productionNumber = productionNumber;
     }
 
+    public LRLine(LRLine other) {
+        this.start = other.start;
+        this.content = other.content;
+        this.forwardSearch = other.forwardSearch;
+        this.productionNumber = other.productionNumber;
+    }
+
     public LRLine(ProcessLine processLine) {
         this.start = processLine.getLine().charAt(0);
-        this.content = "·"+processLine.getLine().substring(3);
-        this.productionNumber = processLine.getLineNumber()+1;
+        this.content = "·" + processLine.getLine().substring(3);
+        this.productionNumber = processLine.getLineNumber() + 1;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        LRLine other = (LRLine) obj;
+        if (this.content.equals(other.content) && this.start.equals(other.start)
+                && this.productionNumber == other.productionNumber
+                && this.forwardSearch.equals(other.forwardSearch)) {
+            return true;
+        }
+        return false;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public Set<Character> getForwardSearch() {
+        return forwardSearch;
     }
 
     public void setContent(String content) {
@@ -34,6 +59,14 @@ public class LRLine {
 
     public void setForwardSearch(Set<Character> forwardSearch) {
         this.forwardSearch = forwardSearch;
+    }
+
+    public Character getStart() {
+        return start;
+    }
+
+    public int getProductionNumber() {
+        return productionNumber;
     }
 
     @Override

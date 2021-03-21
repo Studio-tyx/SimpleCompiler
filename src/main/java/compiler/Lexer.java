@@ -19,7 +19,7 @@ public class Lexer {
     /**
      * 词法分析器主体函数
      *
-     * @param code 代码文件
+     * @param code    代码文件
      * @param grammar 文法文件
      * @throws InputException 输入异常（文法格式异常等）
      */

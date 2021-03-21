@@ -27,4 +27,6 @@ public final class CharacterTools {
         return ((ch >= 'a' && ch <= 'z') || ch == '@');
     }
 
+    public static boolean isPunctuation(char ch){
+        return (ch=='(')||(ch==')')||(ch=='{')||(ch=='}')||(ch==';')||(ch==',')||(ch=='(')||(ch=='@');}
 }
