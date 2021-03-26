@@ -3,8 +3,8 @@ package entity;
 /**
  * @author TYX
  * @name LinkGraph
- * @description
- * @time 2021/3/19 9:29
+ * @description 邻接表实现的图结构（泛型）
+ * @createTime 2021/3/19 9:29
  **/
 
 import java.util.ArrayList;
@@ -80,17 +80,23 @@ public class LinkGraph<T, W> {
         return;
     }
 
-    public T findNextVertex(T thisVertex, W weight){
-        for(Vertex<T,W> vertex:vertices){
-            if(vertex.name.equals(thisVertex)){
-                for(Edge<T,W> edge:vertex.edges){
-                    if(weight.equals(edge.weight))  return edge.nextVertex;
+    public T findNextVertex(T thisVertex, W weight) {
+        for (Vertex<T, W> vertex : vertices) {
+            if (vertex.name.equals(thisVertex)) {
+                for (Edge<T, W> edge : vertex.edges) {
+                    if (weight.equals(edge.weight)) return edge.nextVertex;
                 }
             }
         }
         return null;
     }
 
+    /**
+     * 图中是否存在某个元素（自行构造的数据类型需要额外定义equals）
+     *
+     * @param thisVertex 某个元素
+     * @return 是否存在
+     */
     public boolean exist(T thisVertex) {
         for (Vertex<T, W> vertex : vertices) {
             if (vertex.name.equals(thisVertex)) return true;
@@ -101,9 +107,17 @@ public class LinkGraph<T, W> {
         return false;
     }
 
+    /**
+     * 图结构的输出
+     */
     public void show() {
         for (Vertex<T, W> vertex : vertices) {
             for (Edge<T, W> edge : vertex.edges) {
+//                System.out.println();
+//                System.out.println(vertex.name);
+//                System.out.println("--------------" + edge.weight + "-------------");
+//                System.out.println(edge.nextVertex);
+//                System.out.println();
                 System.out.println(vertex.name + "->" + edge.nextVertex + ":" + edge.weight);
             }
         }

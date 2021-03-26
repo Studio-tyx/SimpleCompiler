@@ -7,7 +7,7 @@ import java.util.List;
  * @author TYX
  * @name Tokens=List of Token
  * @description 词法分析器的分析结果
- * @time 2021/3/8 18:28
+ * @createTime 2021/3/8 18:28
  **/
 
 class Token {
@@ -43,7 +43,6 @@ class Token {
     z->return
      */
 
-
     private static final String[] typeDescription = {"算术运算符", "界符", "class", "d", "错误标识符", "for", "g", "h", "标识符",
             "j", "其他关键字", "逻辑运算符", "m", "注释", "o", "p", "q", "数字常量", "String常量", "类型", "未分类", "可视性", "while", "x", "y", "return"};
 
@@ -71,7 +70,7 @@ class Token {
         return content;
     }
 
-    public int getType() {
+    public char getType() {
         return type;
     }
 
@@ -115,13 +114,6 @@ public class Tokens {
     private static final String[] logistic = {"!=", "==", ">=", "<="};//l
     //class->c
     //while->w
-
-
-
-    /*
-    还不够 要做语法分析就必须要细化
-    keyword要区分类型（）和控制
-     */
 
     //界符常量
     private static final String[] boundaries = {"{", "}", "(", ")", "[", "]", ",", ";"};
@@ -277,7 +269,7 @@ public class Tokens {
                 }
                 for (String keyword : visibility) {
                     if (token.getContent().equals(keyword)) {
-                        token.setType('t');
+                        token.setType('v');
                         break;
                     }
                 }

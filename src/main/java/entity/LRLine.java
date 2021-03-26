@@ -5,8 +5,8 @@ import java.util.Set;
 /**
  * @author TYX
  * @name LRLine
- * @description
- * @time 2021/3/19 14:19
+ * @description LR分析中的句子（含向前搜索符）
+ * @createTime 2021/3/19 14:19
  **/
 public class LRLine {
     private final Character start;
@@ -37,12 +37,9 @@ public class LRLine {
     @Override
     public boolean equals(Object obj) {
         LRLine other = (LRLine) obj;
-        if (this.content.equals(other.content) && this.start.equals(other.start)
+        return this.content.equals(other.content) && this.start.equals(other.start)
                 && this.productionNumber == other.productionNumber
-                && this.forwardSearch.equals(other.forwardSearch)) {
-            return true;
-        }
-        return false;
+                && this.forwardSearch.equals(other.forwardSearch);
     }
 
     public String getContent() {

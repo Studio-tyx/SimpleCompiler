@@ -4,7 +4,7 @@ package exception;
  * @author TYX
  * @name InputException
  * @description 输入异常（如空行、文法格式错误等）
- * @time 2021/3/21 19:21
+ * @createTime 2021/3/21 19:21
  **/
 public class InputException extends Exception {
     public InputException() {

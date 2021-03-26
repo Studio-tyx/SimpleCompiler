@@ -1,0 +1,6 @@
+public class a{
+int main(int a){
+int c;
+return a;
+}
+}

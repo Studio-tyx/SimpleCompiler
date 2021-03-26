@@ -2,19 +2,20 @@ package tool;
 
 import java.util.List;
 import java.util.Set;
+import java.util.Stack;
 
 /**
  * @author TYX
  * @name ShowTools
- * @description
- * @time 2021/3/19 15:05
+ * @description 工具类 输出用
+ * @createTime 2021/3/19 15:05
  **/
 public final class ShowTools {
     /**
-     * 集合展示 便于输出
+     * Set输出
      *
      * @param set 集合
-     * @param <T> 指定状态
+     * @param <T> 指定类型
      */
     public static <T> void show(Set<T> set) {
         System.out.println("----set----------");
@@ -27,10 +28,10 @@ public final class ShowTools {
     }
 
     /**
-     * 集合展示 便于输出
+     * List输出
      *
      * @param list 集合
-     * @param <T>  指定状态
+     * @param <T>  指定类型
      */
     public static <T> void show(List<T> list) {
         System.out.println("----list----------");
@@ -44,16 +45,16 @@ public final class ShowTools {
     }
 
     /**
-     * 集合展示 便于输出
+     * 二维数组输出
      *
-     * @param some 单独字符
-     * @param <T>  指定状态
+     * @param some 二维数组
+     * @param <T>  指定类型
      */
     public static <T> void show(T[][] some) {
         System.out.println("----数组----------");
-        for(T[] t:some){
-            for(T tt:t){
-                System.out.print(tt+"\t");
+        for (T[] t : some) {
+            for (T tt : t) {
+                System.out.print(tt + "\t");
             }
             System.out.println();
         }
@@ -61,10 +62,24 @@ public final class ShowTools {
     }
 
     /**
-     * 集合展示 便于输出
+     * Stack输出
      *
-     * @param some 单独字符
-     * @param <T>  指定状态
+     * @param stack 栈
+     * @param <T> 指定类型
+     */
+    public static <T> void show(Stack<T> stack) {
+        System.out.println("----------stack---------------");
+        for (T t : stack) {
+            System.out.print(t + ",");
+        }
+        System.out.println("\n-------------------------");
+    }
+
+    /**
+     * 输出单个元素
+     *
+     * @param some 单个元素
+     * @param <T>  指定类型
      */
     public static <T> void show(T some) {
         System.out.println("----some----------");

@@ -9,7 +9,7 @@ class FATest {
     /**
      * 测试NFA与DFA是否能识别单词
      *
-     * @throws IOException 读写异常
+     * @throws IOException    读写异常
      * @throws InputException 输入格式异常
      */
     @Test

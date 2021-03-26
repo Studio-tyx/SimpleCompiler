@@ -6,7 +6,7 @@ import java.util.*;
  * @author TYX
  * @name LexerDFA
  * @description DFA（状态用表格展示）
- * @time 2021/3/14 14:51
+ * @createTime 2021/3/14 14:51
  **/
 public class LexerDFA {
     private int[][] matrix; //状态转移矩阵（不是邻接矩阵）

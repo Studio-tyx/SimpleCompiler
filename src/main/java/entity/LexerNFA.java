@@ -6,22 +6,11 @@ import tool.CharacterTools;
 import java.util.HashSet;
 import java.util.Set;
 
-/*
-GraphFA与MatrixFA没有做成FA子类的原因：
-GraphFA的状态类型为character（代码读入为character）
-MatrixFA的状态类型为integer（防止character状态类型不够用）
-两个类型不一 做成同一个类的子类有一点牵强
-
-其实本来想把GraphFA和MatrixFA单独做成两个泛型的
-但是在这次词法分析器中已经固定了某些类型 例如右线性文法中终态为$（character）
-不适合做成泛型
- */
-
 /**
  * @author TYX
  * @name LexerNFA
  * @description NFA（用邻接表实现了图结构，状态类型均为character）
- * @time 2021/3/14 14:17
+ * @createTime 2021/3/14 14:17
  **/
 
 
@@ -63,7 +52,7 @@ public class LexerNFA {
             if (line.length() == 4) {
 
             } else if (line.length() == 5) {
-                if (CharacterTools.isLower(line.charAt(3))) {
+                if (CharacterTools.isLower(line.charAt(3)) || CharacterTools.isAt(line.charAt(3))) {
                     //isRight=true;
                     isLeft = false;
                 } else {
@@ -105,13 +94,13 @@ public class LexerNFA {
                 if (former.length() == 1) {
                     if (CharacterTools.isUpper(former.charAt(0))) {
                         if (latter.length() == 1) {
-                            if (CharacterTools.isLower(latter.charAt(0))) {
+                            if (CharacterTools.isLower(latter.charAt(0)) || CharacterTools.isAt(latter.charAt(0))) {
                                 isLegal = true;
                                 graph.addEdge(former.charAt(0), '$', latter.charAt(0));
                                 if (latter.charAt(0) != '@') terminals.add(latter.charAt(0));
                             }
                         } else if (latter.length() == 2) {
-                            if (CharacterTools.isLower(latter.charAt(0)) && CharacterTools.isUpper(latter.charAt(1))) {
+                            if ((CharacterTools.isLower(latter.charAt(0)) || CharacterTools.isAt(latter.charAt(0))) && CharacterTools.isUpper(latter.charAt(1))) {
                                 isLegal = true;
                                 graph.addEdge(former.charAt(0), latter.charAt(1), latter.charAt(0));
                                 if (latter.charAt(0) != '@') terminals.add(latter.charAt(0));
@@ -151,13 +140,13 @@ public class LexerNFA {
                 if (former.length() == 1) {
                     if (CharacterTools.isUpper(former.charAt(0))) {
                         if (latter.length() == 1) {
-                            if (CharacterTools.isLower(latter.charAt(0))) {
+                            if (CharacterTools.isLower(latter.charAt(0)) || CharacterTools.isAt(latter.charAt(0))) {
                                 isLegal = true;
                                 graph.addEdge('$', former.charAt(0), latter.charAt(0));
                                 if (latter.charAt(0) != '@') terminals.add(latter.charAt(0));
                             }
                         } else if (latter.length() == 2) {
-                            if (CharacterTools.isUpper(latter.charAt(0)) && CharacterTools.isLower(latter.charAt(1))) {
+                            if (CharacterTools.isUpper(latter.charAt(0)) && (CharacterTools.isLower(latter.charAt(1)) || CharacterTools.isAt(latter.charAt(1)))) {
                                 isLegal = true;
                                 graph.addEdge(latter.charAt(0), former.charAt(0), latter.charAt(1));
                                 if (latter.charAt(0) != '@') terminals.add(latter.charAt(1));

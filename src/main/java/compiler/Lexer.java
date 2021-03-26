@@ -10,7 +10,7 @@ import exception.InputException;
  * @author TYX
  * @name Lexer
  * @description 词法分析器主体
- * @time 2021/3/8 13:49
+ * @createTime 2021/3/8 13:49
  **/
 public class Lexer {
     public Lexer() {
@@ -23,7 +23,7 @@ public class Lexer {
      * @param grammar 文法文件
      * @throws InputException 输入异常（文法格式异常等）
      */
-    public void run(Text code, Text grammar) throws InputException {
+    public Tokens run(Text code, Text grammar) throws InputException {
         Tokens tokens = new Tokens();
         LexerNFA lexerNFA = new LexerNFA();
         LexerDFA lexerDFA = new LexerDFA();
@@ -47,5 +47,6 @@ public class Lexer {
         tokens.showBySequence();
         tokens.showByClass();
 
+        return tokens;
     }
 }
