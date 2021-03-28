@@ -1,7 +1,11 @@
 package entity;
 
+import tool.ShowTools;
+
 import java.util.LinkedList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author TYX
@@ -26,7 +30,7 @@ class Token {
     i->identifier:main a x b
     j
     k->keywords(other):
-    l->logistic:!= == >= <=
+    l->logistic:!= == > <
     m
     n->note //
     o
@@ -108,18 +112,15 @@ public class Tokens {
     // "case","default","try","catch","throw","throws","import","package","boolean","byte",
     // "char","double","float","int","long","short","super","this","void","goto","const"
 
-    private static final String[] type = {"void", "boolean", "char", "int", "double", "float"};//t
+    private static final String[] type = {"void", "boolean", "char", "int", "double", "float", "string"};//t
     private static final String[] visibility = {"private", "public", "protected"};//v
     private static final String[] arithmetic = {"*", "/", "="};//a
-    private static final String[] logistic = {"!=", "==", ">=", "<="};//l
+    private static final String[] logistic = {"!", ">", "<"};//l
     //class->c
     //while->w
 
     //界符常量
     private static final String[] boundaries = {"{", "}", "(", ")", "[", "]", ",", ";"};
-
-    //运算符常量
-    private static final String[] operators = {"!=", "==", "*", "/", "="};
 
     public Tokens() {
         tokens = new LinkedList<Token>();
@@ -202,7 +203,9 @@ public class Tokens {
                     continue;
                 }
                 String line = token.getContent();
-                line.replace("\t", "");
+                Pattern p = Pattern.compile("\\t");
+                Matcher m = p.matcher(line);
+                line = m.replaceAll("");
                 String[] words = line.split("\\s+");
                 tokens.remove(token);
                 for (String word : words) {

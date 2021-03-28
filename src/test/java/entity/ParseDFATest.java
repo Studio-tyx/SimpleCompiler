@@ -25,7 +25,7 @@ class ParseDFATest {
         }
     }
 
-    @Test
+    //@Test
     void testStack() {
         Stack<Character> stack = new Stack<Character>();
         stack.push('a');
@@ -77,7 +77,7 @@ class ParseDFATest {
         System.out.println(a.equals(b));
     }
 
-    //@Test
+    @Test
     void testGetFirstSearch() throws IOException {
         ParseDFA parseDFA = new ParseDFA();
         Text text = new Text();

@@ -63,6 +63,7 @@ public class ParseGoto {
                 Goto[i][j] = "n";
             }
             Set<LRLine> thisSet = parseDFA.getStatus().get(i);  //当前状态
+            //ShowTools.show(thisSet);
             for (LRLine lrLine : thisSet) {
                 if (lrLine.getStart() == '%' && lrLine.getContent().equals("S·")) { //设置%->S·为acc
                     if (!Goto[i][terminals.size() - 1].equals("n")) //重复写 说明非LR1文法
@@ -83,7 +84,7 @@ public class ParseGoto {
                 Set<LRLine> nextSet = graph.findNextVertex(thisSet, terminals.get(j));
                 if (nextSet != null) {
                     if (!Goto[i][j].equals("n")) //重复写 说明非LR1文法
-                        throw new InputException("Input grammar error:Not a LR(1) grammar!");
+                        throw new InputException("Input grammar error:Not a LR(1) grammar! Former:i:"+i+","+"j:"+j+",content:"+Goto[i][j]);
                     else Goto[i][j] = "S" + parseDFA.getIndex(parseDFA.getStatus(), nextSet);
                 }
             }
@@ -130,7 +131,7 @@ public class ParseGoto {
         for (int i = 0; i < thisTokens.getTokens().size(); ) {
             Token token = thisTokens.getTokens().get(i);
             Character thisChar;
-            if (token.getType() == 'b') thisChar = token.getContent().charAt(0);    //界符没有单独设置类型
+            if (token.getType() == 'b'||token.getType() == 'l'||token.getType()=='a') thisChar = token.getContent().charAt(0);    //界符没有单独设置类型
             else thisChar = token.getType();    //其他符号都是以type区分的
 
             Integer nowStatus = status.peek();

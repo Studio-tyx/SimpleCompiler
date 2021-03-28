@@ -1,6 +1,9 @@
-public class a{
-int main(int a){
-int c;
-return a;
-}
+public class helloworld {
+	public string[] main(string[] args) {
+		int a=5;
+		while(a<7){
+			a=a+1;
+		}
+		return args;
+	}
 }

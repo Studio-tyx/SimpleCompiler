@@ -15,7 +15,8 @@ import java.io.IOException;
  * @createTime 2021/3/15 17:04
  **/
 /*
-还有点什么问题呢 制表符
+我大概知道是什么问题了
+token type='l'的时候也要把内容设置为this char
  */
 public class Parse {
     /**

@@ -1,7 +1,9 @@
 package entity;
 
 import tool.CharacterTools;
+import tool.ShowTools;
 
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -96,12 +98,26 @@ public class ParseDFA {
      * @return 向前搜素符集合
      */
     public Set<Character> findForwardSearch(LRLine lrLine) {
-        Set<Character> res;
+        Set<Character> res=new HashSet<Character>();
         String original = lrLine.getContent();
         int index = original.indexOf('·');
-        if (derivedNull(original.substring(index + 2)) || original.length() == index + 2)   //可以推导出空串或“·A”
-            res = lrLine.getForwardSearch();    //直接使用父状态的向前搜索符
-        else res = findFirst(original.substring(index + 2));    //无法推导出空串 例如"·Aab" 返回first(ab)=‘a’
+        if(original.length()==index+2){
+            return lrLine.getForwardSearch();
+        }
+        else{
+            for(int i=index+2;i<original.length();i++){
+                if(canBeNUll(original.charAt(i))){//-> a b @ /->@
+                    if(!isAllNUll(original.charAt(i))){//->a b @
+                        res.addAll(findFirst(original.substring(i)));
+                    }
+                }
+                else{//->a b
+                    res.addAll(findFirst(original.substring(i)));
+                    return res;
+                }
+            }
+        }
+        res.addAll(lrLine.getForwardSearch());//->@
         return res;
     }
 
@@ -133,25 +149,28 @@ public class ParseDFA {
      * @param nonTerminal 非终结符
      * @return 是否会推导出空字符串
      */
-    public boolean isNUll(Character nonTerminal) {
-        for (ProcessLine processLine : text.getContent()) { //在语法中搜索以nonTerminal开头的句子
+    public boolean isAllNUll(Character nonTerminal) {
+        boolean res=true;
+        for(ProcessLine processLine: text.getStartWith(nonTerminal)){
             if (processLine.getLine().charAt(0) == nonTerminal) {
-                if (processLine.getLine().charAt(3) == '@') return true;
+                if (processLine.getLine().charAt(3) != '@') res=false;
             }
         }
-        return false;
+        return res;
     }
 
     /**
-     * 某个句子是否会推导出空字符串
+     * 可推空+非空
      *
-     * @param string 句子
-     * @return 是否会推导出空字符串
+     * @param nonTerminal
+     * @return
      */
-    public boolean derivedNull(String string) {
-        boolean res = true;
-        for (int i = 0; i < string.length(); i++) {
-            if (!isNUll(string.charAt(i))) res = false; //只要有一个字符不能推导出空 则整个句子也不行
+    public boolean canBeNUll(Character nonTerminal){
+        boolean res=false;
+        for(ProcessLine processLine: text.getStartWith(nonTerminal)){
+            if (processLine.getLine().charAt(0) == nonTerminal) {
+                if (processLine.getLine().charAt(3) == '@') res=true;
+            }
         }
         return res;
     }
@@ -181,8 +200,9 @@ public class ParseDFA {
         return line.length() == index + 1;
     }
 
-
     /**
+     * 状态转换
+     *
      * @param I      当前状态集
      * @param weight 输入的终结符
      * @return 下一个状态的集合
@@ -253,7 +273,9 @@ public class ParseDFA {
                             newLine.setContent(stringBuilder.toString());
                         }
                         newLine.setForwardSearch(findForwardSearch(lrLine));    //设置向前搜索符集合
-                        if (!existLRLine(plus, newLine)) plus.add(newLine); //如果已有的状态集合中没有该句子
+                        if (!existLRLine(plus, newLine)){
+                            plus.add(newLine); //如果已有的状态集合中没有该句子
+                        }
                     }
                 }
             }
