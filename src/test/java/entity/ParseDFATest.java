@@ -39,7 +39,7 @@ class ParseDFATest {
     //@Test
     void testForwardSearch() throws IOException {
         Text text = new Text();
-        text.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\parseGrammar2.txt");
+        text.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\parseGrammar1.txt");
         ParseDFA parseDFA = new ParseDFA();
         parseDFA.setText(text);
         Set<Character> set = new HashSet<Character>();
@@ -51,7 +51,7 @@ class ParseDFATest {
     //@Test
     void testNext() throws IOException {
         Text text = new Text();
-        text.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\parseGrammar2.txt");
+        text.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\parseGrammar1.txt");
         ParseDFA parseDFA = new ParseDFA();
         String testString = "a·Bb";
         LRLine lrLine1 = new LRLine('S', "·aAb", new HashSet<Character>('#'), 0);
@@ -81,7 +81,7 @@ class ParseDFATest {
     void testGetFirstSearch() throws IOException {
         ParseDFA parseDFA = new ParseDFA();
         Text text = new Text();
-        text.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\parseGrammar1.txt");
+        text.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\parseGrammar2.txt");
         parseDFA.setText(text);
         ShowTools.show(parseDFA.findFirst("A"));
         //Set<Character> set=new ParseDFA().findFirstSet("Bp");

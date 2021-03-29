@@ -15,7 +15,7 @@ class ParseTest {
         Text code = new Text(), lexerGrammar = new Text(), parseGrammar = new Text();
         Lexer lexer = new Lexer();
         code.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\code2.txt");
-        lexerGrammar.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\lexerGrammar2.txt");
+        lexerGrammar.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\lexerGrammar1.txt");
         Tokens tokens = null;
         try {
             tokens = lexer.run(code, lexerGrammar);

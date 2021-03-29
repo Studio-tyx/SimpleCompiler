@@ -112,7 +112,7 @@ public class Tokens {
     // "case","default","try","catch","throw","throws","import","package","boolean","byte",
     // "char","double","float","int","long","short","super","this","void","goto","const"
 
-    private static final String[] type = {"void", "boolean", "char", "int", "double", "float", "string"};//t
+    private static final String[] type = {"void", "boolean", "char", "int", "double", "float", "String"};//t
     private static final String[] visibility = {"private", "public", "protected"};//v
     private static final String[] arithmetic = {"*", "/", "="};//a
     private static final String[] logistic = {"!", ">", "<"};//l
@@ -324,6 +324,8 @@ public class Tokens {
             for (String compare : arithmetic) {
                 if (token.getContent().contains(compare)) {
                     String splitUnit = compare;
+                    if (compare.equals("*"))
+                        splitUnit = String.format("\\%s", compare);
                     String[] split = token.getContent().split("((?<=" + splitUnit + ")|(?=" + splitUnit + "))");
                     int index = tokens.indexOf(token);
                     tokens.remove(token);

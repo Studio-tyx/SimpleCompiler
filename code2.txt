@@ -1,9 +1,13 @@
 public class helloworld {
-	public string[] main(string[] args) {
+	public void main(String[] args) {
 		int a=5;
 		while(a<7){
-			a=a+1;
+			a=(a+1)*2;
 		}
-		return args;
+		print(test(a));
+	}
+	public int test(int v){
+		v=v/2;
+		return v;
 	}
 }

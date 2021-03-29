@@ -14,10 +14,6 @@ import java.io.IOException;
  * @description 语法分析主体
  * @createTime 2021/3/15 17:04
  **/
-/*
-我大概知道是什么问题了
-token type='l'的时候也要把内容设置为this char
- */
 public class Parse {
     /**
      * 语法分析主体函数
@@ -27,8 +23,13 @@ public class Parse {
      * @throws IOException 文件读写异常
      * @throws InputException 语法格式异常
      */
+    /*
+    要做也是可以的
+    语法之后#*******#作为自己的语义规则
+    id.name
+    lookeup
+     */
     public void run(Text grammar, Tokens code) throws IOException, InputException {
-
         ParseDFA parseDFA = new ParseDFA();
         parseDFA.createGraph(grammar);
         ParseGoto parseGoto = new ParseGoto();
