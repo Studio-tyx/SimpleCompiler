@@ -1,0 +1,34 @@
+S->vci{M}
+T->t[]
+T->t
+M->vTi(P){AZ}M
+M->@
+P->Ti,P;
+P->@
+P->Ti
+A->FA
+F->Ti;
+F->Ti=N;#3.value=4.value
+F->D;
+D->i(D)
+D->i(iD)
+D->,iD
+D->@
+F->w(i<r){A}
+F->w(i<=r){A}
+F->w(i>r){A}
+F->w(i>=r){A}
+F->i=N;#assign
+N->E#transmit
+N->N+E#1.value+2.value print
+N->N-E#1.value-2.value print()
+E->B#transmit
+E->E*B#1.value*2.value print()
+E->E/B#1.value/2.value print()
+B->(N)#transmit
+B->i#0.value=1.real
+B->r#0.value=1.real
+A->@
+Z->zi;
+Z->z;
+Z->@

@@ -30,7 +30,12 @@ public class LRLine {
 
     public LRLine(ProcessLine processLine) {
         this.start = processLine.getLine().charAt(0);
-        this.content = "·" + processLine.getLine().substring(3);
+        if (processLine.getLine().contains("#")) {
+            String tmp = processLine.getLine().split("#")[0];
+            this.content = "·" + tmp.substring(3);
+        } else {
+            this.content = "·" + processLine.getLine().substring(3);
+        }
         this.productionNumber = processLine.getLineNumber() + 1;
     }
 

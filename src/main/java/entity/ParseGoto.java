@@ -21,6 +21,7 @@ public class ParseGoto {
     private List<Character> nonTerminals;   //非终结符集合
     private int statusNumber;   //状态总数
     private Text text;  //语法
+    private List<TreeNode> treeNodes;
 
     /**
      * 成员变量初始化 由语法分析终结符与非终结符
@@ -29,12 +30,18 @@ public class ParseGoto {
      */
     public void init(Text text) {
         this.text = text;
-        terminals = new ArrayList<Character>();
-        nonTerminals = new ArrayList<Character>();
+        terminals = new ArrayList<Character>(); //终结符
+        nonTerminals = new ArrayList<Character>();  //非终结符
 
         for (ProcessLine processLine : text.getContent()) {
             String line = processLine.getLine();
-            for (int i = 0; i < line.length(); i++) {
+
+            if (line.contains("#")) {   //分割语义文法与语法文法
+                String[] content = line.split("#");
+                line = content[0];
+            }
+
+            for (int i = 0; i < line.length(); i++) {   //统计终结符与非终结符
                 if (i == 1 || i == 2) continue;
                 Character character = line.charAt(i);
                 if (CharacterTools.isUpper(character)) {
@@ -43,6 +50,7 @@ public class ParseGoto {
                     if (!terminals.contains(character) && character != '@') terminals.add(character);   //终结符不含空字符
                 }
             }
+
         }
         terminals.add('#');
     }
@@ -54,11 +62,11 @@ public class ParseGoto {
      * @throws InputException 非LR(1)文法报错
      */
     public void createGoto(ParseDFA parseDFA) throws InputException {
-        statusNumber = parseDFA.getStatus().size();
-        Goto = new String[statusNumber][terminals.size() + nonTerminals.size()];
-        LinkGraph<Set<LRLine>, Character> graph = parseDFA.getGraph();
+        statusNumber = parseDFA.getStatus().size(); //状态数（用以建goto表）
+        Goto = new String[statusNumber][terminals.size() + nonTerminals.size()];    //goto表
+        LinkGraph<Set<LRLine>, Character> graph = parseDFA.getGraph();  //状态转换图
 
-        for (int i = 0; i < statusNumber; i++) {
+        for (int i = 0; i < statusNumber; i++) {  //对于每个状态（表中每行）
             for (int j = 0; j < terminals.size() + nonTerminals.size(); j++) {  //每行表格初始化（便于后续判断是否为LR1文法）
                 Goto[i][j] = "n";
             }
@@ -81,23 +89,26 @@ public class ParseGoto {
                 }
             }
             for (int j = 0; j < terminals.size(); j++) {    //对于每个终结符 判断是否可以到达新的状态
-                Set<LRLine> nextSet = graph.findNextVertex(thisSet, terminals.get(j));
+                Set<LRLine> nextSet = graph.findNextVertex(thisSet, terminals.get(j));  //下一状态
                 if (nextSet != null) {
-                    if (!Goto[i][j].equals("n")) //重复写 说明非LR1文法
-                        throw new InputException("Input grammar error:Not a LR(1) grammar! Former:i:"+i+","+"j:"+j+",content:"+Goto[i][j]);
-                    else Goto[i][j] = "S" + parseDFA.getIndex(parseDFA.getStatus(), nextSet);
+                    if (!Goto[i][j].equals("n")) {
+                        //重复写 说明非LR1文法
+                        throw new InputException("Input grammar error:Not a LR(1) grammar! Former:i:" + i + "," + "j:" + j + ",content:" + Goto[i][j]);
+                    } else Goto[i][j] = "S" + parseDFA.getIndex(parseDFA.getStatus(), nextSet); //goto表构造
                 }
             }
             for (int j = 0; j < nonTerminals.size(); j++) {    //对于每个非终结符 判断下一个状态
-                Set<LRLine> nextSet = graph.findNextVertex(thisSet, nonTerminals.get(j));
+                Set<LRLine> nextSet = graph.findNextVertex(thisSet, nonTerminals.get(j));   //下一状态
                 if (nextSet != null) {
                     if (!Goto[i][j + terminals.size()].equals("n")) //重复写 说明非LR1文法
                         throw new InputException("Input grammar error:Not a LR(1) grammar!");
                     else
-                        Goto[i][j + terminals.size()] = String.valueOf(parseDFA.getIndex(parseDFA.getStatus(), nextSet));
+                        Goto[i][j + terminals.size()] = String.valueOf(parseDFA.getIndex(parseDFA.getStatus(), nextSet));   //goto表构造
                 }
             }
         }
+
+        //打印Goto表
         System.out.println("Action表:");
         for (Character ch : terminals) System.out.print(ch + "\t");
         for (Character ch : nonTerminals) System.out.print(ch + "\t");
@@ -112,11 +123,13 @@ public class ParseGoto {
      * @param tokens token集合
      * @return 是否符合语法
      */
-    public boolean check(Tokens tokens) {
+    public boolean check(Tokens tokens) throws InputException {
         Tokens thisTokens = tokens; //把形参变成实参 主要是也没啥必要写一遍setTokens
-        boolean res = false;
-        Stack<Integer> status = new Stack<Integer>();
-        Stack<Character> characters = new Stack<Character>();
+        boolean res = false;    //结果
+        Stack<Integer> status = new Stack<Integer>();   //状态栈
+        Stack<Character> characters = new Stack<Character>();   //符号栈
+        treeNodes = new ArrayList<TreeNode>();   //现有的语法树（或语法子树）
+        int countTemp = 0;  //临时变量计数器
 
         //初态
         status.push(0);
@@ -129,12 +142,13 @@ public class ParseGoto {
         System.out.println("符号栈\t状态栈\t下一字符\tACTION");
 
         for (int i = 0; i < thisTokens.getTokens().size(); ) {
-            Token token = thisTokens.getTokens().get(i);
-            Character thisChar;
-            if (token.getType() == 'b'||token.getType() == 'l'||token.getType()=='a') thisChar = token.getContent().charAt(0);    //界符没有单独设置类型
+            Token token = thisTokens.getTokens().get(i);    //当前token
+            Character thisChar; //下一字符
+            if (token.getType() == 'b' || token.getType() == 'l' || token.getType() == 'a') //界符没有单独设置类型
+                thisChar = token.getContent().charAt(0);
             else thisChar = token.getType();    //其他符号都是以type区分的
 
-            Integer nowStatus = status.peek();
+            Integer nowStatus = status.peek();  //当前状态
             String next = Goto[nowStatus][CharacterTools.isUpper(thisChar) ? nonTerminals.indexOf(thisChar) + terminals.size() : terminals.indexOf(thisChar)];  //下一状态
 
             //输出
@@ -148,29 +162,80 @@ public class ParseGoto {
             System.out.println("\t\t" + thisChar + "\t\t" + next);
 
             if (next.charAt(0) == 'S') {    //移进
-                characters.push(thisChar);
-                status.push(Integer.valueOf(next.substring(1)));
+                characters.push(thisChar);  //符号栈压入
+                status.push(Integer.valueOf(next.substring(1)));    //状态栈压入
+
+                //新建语法树节点并加入语法森林
+                TreeNode newNode = new TreeNode(thisChar.toString());
+                treeNodes.add(newNode);
             } else if (next.charAt(0) == 'r') { //规约
                 ProcessLine processLine = text.getContent().get(Integer.parseInt(next.substring(1)) - 1);   //根据r后的数字选择产生式规约
-                String start = processLine.getLine().substring(0, 1);
-                String production = processLine.getLine().substring(3);
+                String start = processLine.getLine().split("#")[0].substring(0, 1);
+                String production = processLine.getLine().split("#")[0].substring(3);
+
+                List<TreeNode> children = new ArrayList<TreeNode>();    //子树
                 if (!production.equals("@")) {  //非空字符则按长度弹栈
                     for (int j = production.length() - 1; j >= 0; j--) {
                         status.pop();   //状态栈弹栈
-                        if (production.charAt(j) != characters.pop()) {  //比较符号是否相等
-                            System.out.println("error");
-                            System.out.println(production);
-                            System.out.println(characters);
+                        Character topChar = characters.pop();
+                        if (production.charAt(j) != topChar) {  //符号栈弹栈不相等则报错
+                            throw new InputException("Input grammar error:Stack error!");
                         }
                     }
+                    for (int m = treeNodes.size() - production.length(); m < treeNodes.size(); ) {  //构建子树
+                        TreeNode newNode = treeNodes.get(m);
+                        treeNodes.remove(m);
+                        children.add(newNode);
+                    }
                 }
-                nowStatus = status.peek();
+                nowStatus = status.peek();  //状态栈弹栈后的下一状态
                 status.push(Integer.valueOf(Goto[nowStatus][(nonTerminals.indexOf(start.charAt(0)) + terminals.size())]));  //转移至下一状态
-                characters.push(start.charAt(0));   //压入产生式左部
+                Character first = start.charAt(0);  //产生式左部
+                characters.push(first); //压入产生式左部
+
+                TreeNode newNode = new TreeNode(first.toString(), children);    //构建子树
+                if (processLine.getLine().contains("#")) {  //有语义分析的内容
+                    String semantic = processLine.getLine().split("#")[1];  //分离语义分析内容
+                    if (semantic.equals("transmit")) {  //值传递
+                        if (production.contains("(")) newNode.setValue(children.get(1).getValue());
+                        else newNode.setValue(children.get(0).getValue());
+                    } else if (semantic.contains("real")) { //真值
+                        Character ch = semantic.charAt(semantic.indexOf("real") - 2);
+                        Integer integer = Integer.valueOf(ch);
+                        children.get(integer - 49).setValue(tokens.getTokens().get(i - 1).getContent());
+                        newNode.setValue(tokens.getTokens().get(i - 1).getContent());
+                    } else if (semantic.contains("value") && children.size() >= 3) {
+                        newNode.setValue("T" + countTemp);
+                        countTemp++;
+                    } else if (semantic.contains("assign")) {   //赋值
+                        System.out.print(":=\t");
+                        TreeNode child = children.get(2);
+                        if (child.getValue() == null) System.out.print(child.getName() + "\t_\t");
+                        else System.out.print(child.getValue() + "\t_\t");
+                        System.out.println(children.get(0).getName());
+                    } else {
+                    }
+                    if (semantic.contains("print")) {   //打印
+                        if (semantic.contains("=") || production.contains(";")) System.out.print(":=\t");
+                        for (TreeNode tn : children) {
+                            if (tn.getValue() == null) {
+                                if (!tn.getName().equals("=")) System.out.print(tn.getName() + "\t");
+                            }
+                        }
+                        for (TreeNode tn : children) {
+                            if (tn.getValue() != null && !tn.getName().equals("="))
+                                System.out.print(tn.getValue() + "\t");
+                        }
+                        if (children.size() < 2) System.out.print("_\t");
+                        System.out.println(newNode.getValue() + "\t");
+                    }
+                    newNode.setChildren(children);
+                }
+                treeNodes.add(newNode);
                 continue;
             } else if (next.equals("acc")) res = true;  //结束了啊
             else {  //基本是出错的
-                System.out.println(next);
+                System.out.println("error:" + next);
             }
             i++;    //下一token
         }

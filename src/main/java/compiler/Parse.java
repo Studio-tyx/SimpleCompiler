@@ -19,15 +19,9 @@ public class Parse {
      * 语法分析主体函数
      *
      * @param grammar 语法
-     * @param code 代码
-     * @throws IOException 文件读写异常
+     * @param code    代码
+     * @throws IOException    文件读写异常
      * @throws InputException 语法格式异常
-     */
-    /*
-    要做也是可以的
-    语法之后#*******#作为自己的语义规则
-    id.name
-    lookeup
      */
     public void run(Text grammar, Tokens code) throws IOException, InputException {
         ParseDFA parseDFA = new ParseDFA();

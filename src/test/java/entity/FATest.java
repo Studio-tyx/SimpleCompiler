@@ -15,7 +15,7 @@ class FATest {
     @Test
     void testDFA() throws IOException, InputException {
         Text text = new Text();
-        text.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\lexerGrammar3.txt");
+        text.init("lexerGrammar3.txt");
         LexerNFA lexerNFA = new LexerNFA();
         lexerNFA.init(text);
         LexerDFA lexerDFA = new LexerDFA();

@@ -1,0 +1,5 @@
+public class helloworld {
+	public void main(String[] args) {
+		a=b*c+2*3;
+	}
+}

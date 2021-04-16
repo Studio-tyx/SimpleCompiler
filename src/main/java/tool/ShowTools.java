@@ -1,5 +1,7 @@
 package tool;
 
+import entity.TreeNode;
+
 import java.util.List;
 import java.util.Set;
 import java.util.Stack;
@@ -65,7 +67,7 @@ public final class ShowTools {
      * Stack输出
      *
      * @param stack 栈
-     * @param <T> 指定类型
+     * @param <T>   指定类型
      */
     public static <T> void show(Stack<T> stack) {
         System.out.println("----------stack---------------");
@@ -85,6 +87,14 @@ public final class ShowTools {
         System.out.println("----some----------");
         System.out.println(some);
         System.out.println("\n---------------");
+    }
+
+    public static String getQuaternion(List<TreeNode> children) {
+        String res = "";
+        for (int i = 0; i < children.size(); i++) {
+            res += "," + children.get(i).getName();
+        }
+        return res;
     }
 
 }

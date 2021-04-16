@@ -15,7 +15,7 @@ class TextTest {
     @Test
     void testFile() throws IOException {
         Text text = new Text();
-        text.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\test.txt");
+        text.init("test.txt");
 //        while(!text.outLine()){
 //            System.out.println(text.nextLine().toString());
 //        }
@@ -23,6 +23,15 @@ class TextTest {
         List<ProcessLine> all = text.getContent();
         for (ProcessLine pl : all) {
             System.out.println(pl.toString());
+        }
+    }
+
+    //@Test
+    void testRegex() {
+        String string="hey#this";
+        String[] split = string.split("#");
+        for(String s:split){
+            System.out.println(s);
         }
     }
 }

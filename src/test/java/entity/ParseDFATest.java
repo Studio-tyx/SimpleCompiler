@@ -14,7 +14,7 @@ class ParseDFATest {
     void testGotoInit() throws IOException {
         ParseDFA parseDFA = new ParseDFA();
         Text text = new Text();
-        text.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\parseGrammar1.txt");
+        text.init("parseGrammar1.txt");
         parseDFA.createGraph(text);
         ParseGoto parseGoto = new ParseGoto();
         parseGoto.init(text);
@@ -36,10 +36,10 @@ class ParseDFATest {
         }
     }
 
-    //@Test
+    @Test
     void testForwardSearch() throws IOException {
         Text text = new Text();
-        text.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\parseGrammar1.txt");
+        text.init("parseGrammar1.txt");
         ParseDFA parseDFA = new ParseDFA();
         parseDFA.setText(text);
         Set<Character> set = new HashSet<Character>();
@@ -51,7 +51,7 @@ class ParseDFATest {
     //@Test
     void testNext() throws IOException {
         Text text = new Text();
-        text.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\parseGrammar1.txt");
+        text.init("parseGrammar1.txt");
         ParseDFA parseDFA = new ParseDFA();
         String testString = "a·Bb";
         LRLine lrLine1 = new LRLine('S', "·aAb", new HashSet<Character>('#'), 0);
@@ -77,11 +77,11 @@ class ParseDFATest {
         System.out.println(a.equals(b));
     }
 
-    @Test
+    //@Test
     void testGetFirstSearch() throws IOException {
         ParseDFA parseDFA = new ParseDFA();
         Text text = new Text();
-        text.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\parseGrammar2.txt");
+        text.init("parseGrammar2.txt");
         parseDFA.setText(text);
         ShowTools.show(parseDFA.findFirst("A"));
         //Set<Character> set=new ParseDFA().findFirstSet("Bp");
@@ -95,5 +95,8 @@ class ParseDFATest {
         System.out.println();
         System.out.println(string.indexOf("c"));
         System.out.println(string.length());
+
+        System.out.println(string.indexOf("bc"));
+        System.out.println(string.charAt(string.indexOf("bc")-1));
     }
 }

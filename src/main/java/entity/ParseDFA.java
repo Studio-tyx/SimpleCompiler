@@ -1,9 +1,7 @@
 package entity;
 
 import tool.CharacterTools;
-import tool.ShowTools;
 
-import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -98,20 +96,18 @@ public class ParseDFA {
      * @return 向前搜素符集合
      */
     public Set<Character> findForwardSearch(LRLine lrLine) {
-        Set<Character> res=new HashSet<Character>();
+        Set<Character> res = new HashSet<Character>();
         String original = lrLine.getContent();
         int index = original.indexOf('·');
-        if(original.length()==index+2){
+        if (original.length() == index + 2) {
             return lrLine.getForwardSearch();
-        }
-        else{
-            for(int i=index+2;i<original.length();i++){
-                if(canBeNUll(original.charAt(i))){//-> a b @ /->@
-                    if(!isAllNUll(original.charAt(i))){//->a b @
+        } else {
+            for (int i = index + 2; i < original.length(); i++) {
+                if (canBeNUll(original.charAt(i))) {//-> a b @ /->@
+                    if (!isAllNUll(original.charAt(i))) {//->a b @
                         res.addAll(findFirst(original.substring(i)));
                     }
-                }
-                else{//->a b
+                } else {//->a b
                     res.addAll(findFirst(original.substring(i)));
                     return res;
                 }
@@ -150,10 +146,11 @@ public class ParseDFA {
      * @return 是否会推导出空字符串
      */
     public boolean isAllNUll(Character nonTerminal) {
-        boolean res=true;
-        for(ProcessLine processLine: text.getStartWith(nonTerminal)){
-            if (processLine.getLine().charAt(0) == nonTerminal) {
-                if (processLine.getLine().charAt(3) != '@') res=false;
+        boolean res = true;
+        for (ProcessLine processLine : text.getStartWith(nonTerminal)) {
+            String tmpString = processLine.getLine().split("#")[0];
+            if (tmpString.charAt(0) == nonTerminal) {
+                if (processLine.getLine().charAt(3) != '@') res = false;
             }
         }
         return res;
@@ -165,11 +162,12 @@ public class ParseDFA {
      * @param nonTerminal
      * @return
      */
-    public boolean canBeNUll(Character nonTerminal){
-        boolean res=false;
-        for(ProcessLine processLine: text.getStartWith(nonTerminal)){
-            if (processLine.getLine().charAt(0) == nonTerminal) {
-                if (processLine.getLine().charAt(3) == '@') res=true;
+    public boolean canBeNUll(Character nonTerminal) {
+        boolean res = false;
+        for (ProcessLine processLine : text.getStartWith(nonTerminal)) {
+            String tmpString = processLine.getLine().split("#")[0];
+            if (tmpString.charAt(0) == nonTerminal) {
+                if (processLine.getLine().charAt(3) == '@') res = true;
             }
         }
         return res;
@@ -184,7 +182,7 @@ public class ParseDFA {
     public boolean moveEnd(Set<LRLine> set) {
         boolean res = true;
         for (LRLine lrLine : set) {
-            if(!endProduction(lrLine.getContent())) res=false;
+            if (!endProduction(lrLine.getContent())) res = false;
         }
         return res;
     }
@@ -273,7 +271,7 @@ public class ParseDFA {
                             newLine.setContent(stringBuilder.toString());
                         }
                         newLine.setForwardSearch(findForwardSearch(lrLine));    //设置向前搜索符集合
-                        if (!existLRLine(plus, newLine)){
+                        if (!existLRLine(plus, newLine)) {
                             plus.add(newLine); //如果已有的状态集合中没有该句子
                         }
                     }

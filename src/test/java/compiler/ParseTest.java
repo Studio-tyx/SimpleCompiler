@@ -14,8 +14,8 @@ class ParseTest {
     void testParse() throws IOException {
         Text code = new Text(), lexerGrammar = new Text(), parseGrammar = new Text();
         Lexer lexer = new Lexer();
-        code.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\code2.txt");
-        lexerGrammar.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\lexerGrammar1.txt");
+        code.init("code3.txt");
+        lexerGrammar.init("lexerGrammar1.txt");
         Tokens tokens = null;
         try {
             tokens = lexer.run(code, lexerGrammar);
@@ -24,7 +24,7 @@ class ParseTest {
         }
 
         Parse parse = new Parse();
-        parseGrammar.init("D:\\Languages\\Java\\Java Code\\SimpleCompiler\\parseGrammar1.txt");
+        parseGrammar.init("semanticGrammar1.txt");
         try {
             parse.run(parseGrammar, tokens);
         } catch (InputException e) {
