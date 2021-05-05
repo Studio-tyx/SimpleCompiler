@@ -6,6 +6,8 @@ import entity.Text;
 import entity.Tokens;
 import exception.InputException;
 
+import java.util.List;
+
 /**
  * @author TYX
  * @name Lexer
@@ -44,9 +46,21 @@ public class Lexer {
         tokens.separateNumber();
         tokens.separatePoint();
         tokens.separateIdentifier(lexerDFA);
-        tokens.showBySequence();
-        tokens.showByClass();
+        //System.out.println(tokens.showBySequence());
+        //System.out.println(tokens.showByClass());
 
         return tokens;
+    }
+
+    public List<String> getNFA(Text grammar) throws InputException {
+        LexerNFA lexerNFA = new LexerNFA();
+        return lexerNFA.init(grammar);
+    }
+
+    public List<String> getDFA(Text grammar) throws InputException {
+        LexerNFA lexerNFA = new LexerNFA();
+        LexerDFA lexerDFA=new LexerDFA();
+        lexerNFA.init(grammar);
+        return lexerDFA.init(lexerNFA);
     }
 }

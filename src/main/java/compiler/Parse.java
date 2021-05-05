@@ -1,9 +1,6 @@
 package compiler;
 
-import entity.ParseDFA;
-import entity.ParseGoto;
-import entity.Text;
-import entity.Tokens;
+import entity.*;
 import exception.InputException;
 
 import java.io.IOException;
@@ -23,12 +20,28 @@ public class Parse {
      * @throws IOException    文件读写异常
      * @throws InputException 语法格式异常
      */
-    public void run(Text grammar, Tokens code) throws IOException, InputException {
+    public ParseResult run(Text grammar, Tokens code) throws IOException, InputException {
+        ParseResult res;
         ParseDFA parseDFA = new ParseDFA();
         parseDFA.createGraph(grammar);
         ParseGoto parseGoto = new ParseGoto();
         parseGoto.init(grammar);
         parseGoto.createGoto(parseDFA);
-        System.out.println(parseGoto.check(code));
+        GOTO gotoTable=parseGoto.getGotoTable();
+        res= parseGoto.check(code);
+        res.setGotoTable(gotoTable);
+        //res.show();
+        return res;
+    }
+
+    public GOTO createGoto(Text grammar) throws InputException {
+        GOTO gotoTable;
+        ParseDFA parseDFA=new ParseDFA();
+        parseDFA.createGraph(grammar);
+        ParseGoto parseGoto=new ParseGoto();
+        parseGoto.init(grammar);
+        parseGoto.createGoto(parseDFA);
+        gotoTable=parseGoto.getGotoTable();
+        return gotoTable;
     }
 }

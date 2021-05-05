@@ -3,7 +3,9 @@ package entity;
 import exception.InputException;
 import tool.CharacterTools;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -45,7 +47,7 @@ public class LexerNFA {
      * @param text 输入的文本
      * @throws InputException 输入格式异常等
      */
-    public void init(Text text) throws InputException {
+    public List<String> init(Text text) throws InputException {
         boolean isLeft = true, isRight = true;
         for (ProcessLine processLine : text.getContent()) {
             String line = processLine.getLine();
@@ -66,7 +68,8 @@ public class LexerNFA {
         }
         if (isRight) initRight(text);
         else if (isLeft) initLeft(text);
-        showNFA();
+        //showNFA();
+        return getNFA();
     }
 
     /**
@@ -231,6 +234,19 @@ public class LexerNFA {
 //            System.out.print(ch + ",");
 //        }
         System.out.println("\n------------------------------");
+    }
+
+    /**
+     * NFA图结构的展示
+     */
+    public List<String> getNFA() {
+        List<String> res=new ArrayList<String>();
+        for (Vertex<Character, Character> vertex : graph.getVertices()) {
+            for (Edge<Character, Character> edge : vertex.edges) {
+                res.add(vertex.name + "->" + edge.nextVertex + ":" + edge.weight);
+            }
+        }
+        return res;
     }
 
     /**

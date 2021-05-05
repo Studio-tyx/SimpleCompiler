@@ -501,9 +501,10 @@ public class Tokens {
     /**
      * 按分类展示
      */
-    public void showByClass() {
-        System.out.println("*************CLASS**************");
-        System.out.println("---------keywords----------");
+    public String showByClass() {
+        String res="";
+        res+="*************CLASS**************\n";
+        res+="---------keywords----------";
         for (Token token : tokens) {
             switch (token.getType()) {
                 case 'c':
@@ -514,56 +515,59 @@ public class Tokens {
                 case 't':
                 case 'v':
                 case 'w':
-                    System.out.println(token.toString());
+                    res+=(token.toString()+"\n");
                     break;
                 default:
             }
         }
         System.out.println("---------boundaries----------");
         for (Token token : tokens) {
-            if (token.getType() == 'b') System.out.println(token.toString());
+            if (token.getType() == 'b') res+=(token.toString()+"\n");
         }
         System.out.println("---------operators----------");
         for (Token token : tokens) {
             if (token.getType() == 'a' || token.getType() == 'l')
-                System.out.println(token.toString());
+                res+=(token.toString()+"\n");
         }
         System.out.println("---------numbers----------");
         for (Token token : tokens) {
-            if (token.getType() == 'r') System.out.println(token.toString());
+            if (token.getType() == 'r') res+=(token.toString()+"\n");
         }
         System.out.println("---------identifiers----------");
         for (Token token : tokens) {
-            if (token.getType() == 'i') System.out.println(token.toString());
+            if (token.getType() == 'i') res+=(token.toString()+"\n");
         }
         System.out.println("---------\"****\"----------");
         for (Token token : tokens) {
-            if (token.getType() == 's') System.out.println(token.toString());
+            if (token.getType() == 's') res+=(token.toString()+"\n");
         }
         System.out.println("---------//----------");
         for (Token token : tokens) {
-            if (token.getType() == 'n') System.out.println(token.toString());
+            if (token.getType() == 'n') res+=(token.toString()+"\n");
         }
         System.out.println("---------wrong----------");
         for (Token token : tokens) {
-            if (token.getType() == 'e') System.out.println(token.toString());
+            if (token.getType() == 'e') res+=(token.toString()+"\n");
         }
         System.out.println("---------unclassified----------");
         for (Token token : tokens) {
-            if (token.getType() == 'u') System.out.println(token.toString());
+            if (token.getType() == 'u') res+=(token.toString()+"\n");
         }
-        System.out.println();
+        res+="\n";
+        return res;
     }
 
     /**
      * 按输入序列展示
      */
-    public void showBySequence() {
-        System.out.println("*************SEQUENCE**************");
+    public String showBySequence() {
+        String res="";
+        res+="*************SEQUENCE**************\n";
         for (Token token : tokens) {
-            System.out.println(token.toString());
+            res+=(token.toString()+"\n");
         }
-        System.out.println();
+        res+="\n";
+        return res;
     }
 
 }

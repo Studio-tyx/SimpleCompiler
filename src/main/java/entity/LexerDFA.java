@@ -31,7 +31,7 @@ public class LexerDFA {
      *
      * @param lexerNFA NFA
      */
-    public void init(LexerNFA lexerNFA) {
+    public List<String> init(LexerNFA lexerNFA) {
         List<Set<Character>> statusMap = new ArrayList<Set<Character>>();   //DFA状态与NFA子集的对应关系 int<->set<Character>
         terminals = new HashSet<Integer>();
         terminalLink = new ArrayList<Character>();
@@ -83,7 +83,8 @@ public class LexerDFA {
             }
         }
         statusNumber = maxStatus;   //总状态数
-        showDFA();
+//        showDFA();
+        return getDFA();
     }
 
     /**
@@ -119,4 +120,16 @@ public class LexerDFA {
         System.out.println("---------------------");
     }
 
+    /**
+     * DFA展示 便于输出
+     */
+    public List<String> getDFA() {
+        List<String> res=new ArrayList<String>();
+        for (int i = 0; i <= statusNumber; i++) {
+            for (int j = 0; j < terminalLink.size(); j++) {
+                res.add(i + "->" + matrix[i][j] + ":" + terminalLink.get(j));
+            }
+        }
+        return res;
+    }
 }
