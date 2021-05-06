@@ -1,8 +1,7 @@
 package entity;
 
-import exception.InputException;
+import exception.TYXException;
 import tool.CharacterTools;
-import tool.ShowTools;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,9 +56,9 @@ public class ParseGoto {
      * 由DFA转换为Goto表
      *
      * @param parseDFA 输入的DFA
-     * @throws InputException 非LR(1)文法报错
+     * @throws TYXException 非LR(1)文法报错
      */
-    public void createGoto(ParseDFA parseDFA) throws InputException {
+    public void createGoto(ParseDFA parseDFA) throws TYXException {
         int statusNumber = parseDFA.getStatus().size(); //状态数（用以建goto表）
         gotoTable.setStatusNumber(statusNumber);
         List<Character> terminals= gotoTable.getTerminals();  //终结符集合
@@ -78,14 +77,14 @@ public class ParseGoto {
             for (LRLine lrLine : thisSet) {
                 if (lrLine.getStart() == '%' && lrLine.getContent().equals("S·")) { //设置%->S·为acc
                     if (!Goto[i][terminals.size() - 1].equals("n")) //重复写 说明非LR1文法
-                        throw new InputException("Input grammar error:Not a LR(1) grammar!");
+                        throw new TYXException("Input grammar error:Not a LR(1) grammar!");
                     else Goto[i][terminals.size() - 1] = "acc";
                 }
                 if (parseDFA.endProduction(lrLine.getContent())) { //判断是否有到底的句子->r规约
                     for (Character forwardSearch : lrLine.getForwardSearch()) {
                         if (lrLine.getProductionNumber() != 0) {    //'S->S 第0号产生式不算
                             if (!Goto[i][terminals.indexOf(forwardSearch)].equals("n")) //重复写 说明非LR1文法
-                                throw new InputException("Input grammar error:Not a LR(1) grammar!");
+                                throw new TYXException("Input grammar error:Not a LR(1) grammar!");
                             else Goto[i][terminals.indexOf(forwardSearch)] = "r" + lrLine.getProductionNumber();
                         }
                     }
@@ -96,7 +95,7 @@ public class ParseGoto {
                 if (nextSet != null) {
                     if (!Goto[i][j].equals("n")) {
                         //重复写 说明非LR1文法
-                        throw new InputException("Input grammar error:Not a LR(1) grammar! Former:i:" + i + "," + "j:" + j + ",content:" + Goto[i][j]);
+                        throw new TYXException("Input grammar error:Not a LR(1) grammar! Former:i:" + i + "," + "j:" + j + ",content:" + Goto[i][j]);
                     } else Goto[i][j] = "S" + parseDFA.getIndex(parseDFA.getStatus(), nextSet); //goto表构造
                 }
             }
@@ -104,21 +103,13 @@ public class ParseGoto {
                 Set<LRLine> nextSet = graph.findNextVertex(thisSet, nonTerminals.get(j));   //下一状态
                 if (nextSet != null) {
                     if (!Goto[i][j + terminals.size()].equals("n")) //重复写 说明非LR1文法
-                        throw new InputException("Input grammar error:Not a LR(1) grammar!");
+                        throw new TYXException("Input grammar error:Not a LR(1) grammar!");
                     else
                         Goto[i][j + terminals.size()] = String.valueOf(parseDFA.getIndex(parseDFA.getStatus(), nextSet));   //goto表构造
                 }
             }
         }
         gotoTable.setGoto(Goto);
-
-//        //打印Goto表
-//        System.out.println("Action表:");
-//        for (Character ch : GotoTable.getTerminals()) System.out.print(ch + "\t");
-//        for (Character ch : GotoTable.getNonTerminals()) System.out.print(ch + "\t");
-//        System.out.println();
-//        ShowTools.show(Goto);
-//        System.out.println();
     }
 
     public GOTO getGotoTable() {
@@ -131,7 +122,7 @@ public class ParseGoto {
      * @param tokens token集合
      * @return 是否符合语法
      */
-    public ParseResult check(Tokens tokens) throws InputException {
+    public ParseResult check(Tokens tokens) throws TYXException {
         Tokens thisTokens = tokens; //把形参变成实参 主要是也没啥必要写一遍setTokens
         boolean res = false;    //结果
         Stack<Integer> status = new Stack<Integer>();   //状态栈
@@ -181,7 +172,13 @@ public class ParseGoto {
                 status.push(Integer.valueOf(next.substring(1)));    //状态栈压入
 
                 //新建语法树节点并加入语法森林
-                TreeNode newNode = new TreeNode(thisChar.toString());
+                TreeNode newNode;
+                if(thisChar=='i'){
+                    newNode = new TreeNode(token.getContent());
+                }
+                else {
+                    newNode = new TreeNode(thisChar.toString());
+                }
                 treeNodes.add(newNode);
             } else if (next.charAt(0) == 'r') { //规约
                 ProcessLine processLine = text.getContent().get(Integer.parseInt(next.substring(1)) - 1);   //根据r后的数字选择产生式规约
@@ -194,7 +191,7 @@ public class ParseGoto {
                         status.pop();   //状态栈弹栈
                         Character topChar = characters.pop();
                         if (production.charAt(j) != topChar) {  //符号栈弹栈不相等则报错
-                            throw new InputException("Input grammar error:Stack error!");
+                            throw new TYXException("Input grammar error:Stack error!");
                         }
                     }
                     for (int m = treeNodes.size() - production.length(); m < treeNodes.size(); ) {  //构建子树
@@ -230,6 +227,7 @@ public class ParseGoto {
                         if (child.getValue() == null) quaternion+=(child.getName() + "\t_\t");
                         else quaternion+=(child.getValue() + "\t_\t");
                         quaternion+=(children.get(0).getName());
+
                     } else {
                     }
                     if (semantic.contains("print")) {   //打印

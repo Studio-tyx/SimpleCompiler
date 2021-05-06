@@ -5,7 +5,7 @@ import java.util.List;
 /**
  * @author TYX
  * @name TreeNode
- * @description
+ * @description 语法树结点
  * @createTime 2021/4/2 16:33
  **/
 public class TreeNode {
@@ -29,8 +29,6 @@ public class TreeNode {
         this.children = children;
     }
 
-    //怎么整呢
-    //基本上是每次规约 如果是非终结符就找那棵子树 终结符就用已有的新建结点
     public TreeNode(String name, List<TreeNode> children) {
         this.name = name;
         this.children = children;

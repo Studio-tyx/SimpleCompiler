@@ -1,6 +1,6 @@
 package entity;
 
-import exception.InputException;
+import exception.TYXException;
 import tool.CharacterTools;
 
 import java.util.ArrayList;
@@ -45,9 +45,9 @@ public class LexerNFA {
      * 根据读入的文本生成NFA（根据文本结构判断是左线性还是右线性）
      *
      * @param text 输入的文本
-     * @throws InputException 输入格式异常等
+     * @throws TYXException 输入格式异常等
      */
-    public List<String> init(Text text) throws InputException {
+    public List<String> init(Text text) throws TYXException {
         boolean isLeft = true, isRight = true;
         for (ProcessLine processLine : text.getContent()) {
             String line = processLine.getLine();
@@ -55,15 +55,13 @@ public class LexerNFA {
 
             } else if (line.length() == 5) {
                 if (CharacterTools.isLower(line.charAt(3)) || CharacterTools.isAt(line.charAt(3))) {
-                    //isRight=true;
                     isLeft = false;
                 } else {
                     isRight = false;
-                    //isLeft=true;
                 }
             }
             if (!isLeft && !isRight)
-                throw new InputException("Input grammar error at line " + processLine.getLineNumber() +
+                throw new TYXException("Input grammar error at line " + processLine.getLineNumber() +
                         ":Grammar format error! Please select left linear grammar or right linear grammar!");
         }
         if (isRight) initRight(text);
@@ -76,9 +74,9 @@ public class LexerNFA {
      * 右线性文法的初始化
      *
      * @param text 输入文本
-     * @throws InputException 输入异常
+     * @throws TYXException 输入异常
      */
-    public void initRight(Text text) throws InputException {
+    public void initRight(Text text) throws TYXException {
         graph = new LinkGraph<Character, Character>();
         //List<Vertex<Character>> vertices=graph.getVertices();
         terminals = new HashSet<Character>();
@@ -86,9 +84,8 @@ public class LexerNFA {
         for (ProcessLine processLine : text.getContent()) {
             String line = processLine.getLine();
             if (line.equals("")) {
-                throw new InputException("Input grammar error at line " + processLine.getLineNumber()
+                throw new TYXException("Input grammar error at line " + processLine.getLineNumber()
                         + ": Grammar has a blank line!");
-                //break;
             }
             boolean isLegal = false;
             if (line.contains("->")) {
@@ -113,7 +110,7 @@ public class LexerNFA {
                 }
             }
             if (!isLegal)
-                throw new InputException("Input grammar error at line " + processLine.getLineNumber()
+                throw new TYXException("Input grammar error at line " + processLine.getLineNumber()
                         + ": Not a format of normal grammar!");
         }
     }
@@ -122,17 +119,16 @@ public class LexerNFA {
      * 左线性文法的初始化
      *
      * @param text 输入文本
-     * @throws InputException 输入格式初始化
+     * @throws TYXException 输入格式初始化
      */
-    public void initLeft(Text text) throws InputException {
+    public void initLeft(Text text) throws TYXException {
         graph = new LinkGraph<Character, Character>();
-        //List<Vertex<Character>> vertices=graph.getVertices();
         terminals = new HashSet<Character>();
         finalStatus = text.getContent().get(0).getLine().charAt(0);
         for (ProcessLine processLine : text.getContent()) {
             String line = processLine.getLine();
             if (line.equals("")) {
-                throw new InputException("Input grammar error at line " + processLine.getLineNumber()
+                throw new TYXException("Input grammar error at line " + processLine.getLineNumber()
                         + ": Grammar has a blank line!");
                 //break;
             }
@@ -159,7 +155,7 @@ public class LexerNFA {
                 }
             }
             if (!isLegal)
-                throw new InputException("Input grammar error at line " + processLine.getLineNumber()
+                throw new TYXException("Input grammar error at line " + processLine.getLineNumber()
                         + ": Not a format of normal grammar!");
         }
     }
@@ -229,10 +225,6 @@ public class LexerNFA {
                 System.out.println(vertex.name + "->" + edge.nextVertex + ":" + edge.weight);
             }
         }
-//        System.out.println("--NFA terminals----------------------------");
-//        for (Character ch : terminals) {
-//            System.out.print(ch + ",");
-//        }
         System.out.println("\n------------------------------");
     }
 

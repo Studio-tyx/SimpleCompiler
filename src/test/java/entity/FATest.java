@@ -1,6 +1,6 @@
 package entity;
 
-import exception.InputException;
+import exception.TYXException;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -10,10 +10,10 @@ class FATest {
      * 测试NFA与DFA是否能识别单词
      *
      * @throws IOException    读写异常
-     * @throws InputException 输入格式异常
+     * @throws TYXException 输入格式异常
      */
     @Test
-    void testDFA() throws IOException, InputException {
+    void testDFA() throws IOException, TYXException {
         Text text = new Text();
         text.init("lexerGrammar3.txt");
         LexerNFA lexerNFA = new LexerNFA();

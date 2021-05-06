@@ -4,7 +4,7 @@ import entity.LexerDFA;
 import entity.LexerNFA;
 import entity.Text;
 import entity.Tokens;
-import exception.InputException;
+import exception.TYXException;
 
 import java.util.List;
 
@@ -23,9 +23,10 @@ public class Lexer {
      *
      * @param code    代码文件
      * @param grammar 文法文件
-     * @throws InputException 输入异常（文法格式异常等）
+     * @return tokens
+     * @throws TYXException 输入异常（文法格式异常等）
      */
-    public Tokens run(Text code, Text grammar) throws InputException {
+    public Tokens run(Text code, Text grammar) throws TYXException {
         Tokens tokens = new Tokens();
         LexerNFA lexerNFA = new LexerNFA();
         LexerDFA lexerDFA = new LexerDFA();
@@ -38,6 +39,7 @@ public class Lexer {
         tokens.separateSpace();
         tokens.markKeyword();
         tokens.separateBoundary();
+        tokens.separateSpace();
         tokens.markKeyword();
         tokens.separateLogistic();
         tokens.separateArithmetic();
@@ -52,12 +54,26 @@ public class Lexer {
         return tokens;
     }
 
-    public List<String> getNFA(Text grammar) throws InputException {
+    /**
+     * 用于NFA展示
+     *
+     * @param grammar 文法文件
+     * @return NFA展示集合
+     * @throws TYXException 输入异常（文法格式异常）
+     */
+    public List<String> getNFA(Text grammar) throws TYXException {
         LexerNFA lexerNFA = new LexerNFA();
         return lexerNFA.init(grammar);
     }
 
-    public List<String> getDFA(Text grammar) throws InputException {
+    /**
+     * 用于DFA展示
+     *
+     * @param grammar 文法文件
+     * @return DFA展示集合
+     * @throws TYXException 输入异常（文法格式异常）
+     */
+    public List<String> getDFA(Text grammar) throws TYXException {
         LexerNFA lexerNFA = new LexerNFA();
         LexerDFA lexerDFA=new LexerDFA();
         lexerNFA.init(grammar);

@@ -500,6 +500,8 @@ public class Tokens {
 
     /**
      * 按分类展示
+     *
+     * @return String 便于Frame输出
      */
     public String showByClass() {
         String res="";
@@ -559,10 +561,12 @@ public class Tokens {
 
     /**
      * 按输入序列展示
+     *
+     * @return String 便于Frame输出
      */
     public String showBySequence() {
         String res="";
-        res+="*************SEQUENCE**************\n";
+        //res+="*************SEQUENCE**************\n";
         for (Token token : tokens) {
             res+=(token.toString()+"\n");
         }

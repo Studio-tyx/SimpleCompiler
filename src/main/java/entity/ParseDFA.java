@@ -34,6 +34,11 @@ public class ParseDFA {
         this.text = text;
     }
 
+    /**
+     * 语法图初始化
+     *
+     * @param text 语法文件
+     */
     public void createGraph(Text text) {
         //初始化
         this.text = text;
@@ -157,10 +162,10 @@ public class ParseDFA {
     }
 
     /**
-     * 可推空+非空
+     * 判断某个非终结符是否可推空+非空
      *
-     * @param nonTerminal
-     * @return
+     * @param nonTerminal 非终结符
+     * @return boolean
      */
     public boolean canBeNUll(Character nonTerminal) {
         boolean res = false;

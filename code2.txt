@@ -2,7 +2,7 @@ public class helloworld {
 	public void main(String[] args) {
 		int a=5;
 		while(a<7){
-			a=(a+1)*2;
+			a=a*2+a*3;
 		}
 		print(test(a));
 	}

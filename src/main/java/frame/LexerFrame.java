@@ -3,11 +3,10 @@ package frame;
 import compiler.Lexer;
 import entity.Text;
 import entity.Tokens;
-import exception.InputException;
+import exception.TYXException;
 import tool.IOTools;
 
 import javax.swing.*;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
@@ -145,8 +144,9 @@ public class LexerFrame extends JFrame {
             Lexer lexer=new Lexer();
             try {
                 faFrame.init(lexer.getNFA(grammar),lexer.getDFA(grammar));
-            } catch (InputException inputException) {
-                inputException.printStackTrace();
+            } catch (TYXException TYXException) {
+                TYXException.printStackTrace();
+                return;
             }
             faFrame.setVisible(true);
         }
@@ -154,6 +154,15 @@ public class LexerFrame extends JFrame {
 
     class LexerAnalyseActionListener implements ActionListener{
         public void actionPerformed(ActionEvent e) {
+            if(codeURL==null){
+                try {
+                    throw new TYXException("Input error: please input code!");
+                } catch (TYXException TYXException) {
+                    System.out.println("hey");
+                    TYXException.printStackTrace();
+                    return;
+                }
+            }
             Text code = new Text(), grammar = new Text();
             Lexer lexer = new Lexer();
             Tokens tokens = new Tokens();
@@ -165,9 +174,9 @@ public class LexerFrame extends JFrame {
             }
             try {
                 tokens=lexer.run(code, grammar);
-            } catch (InputException inputException) {
-                //e.printStackTrace();
-                System.out.println(inputException.getMessage());
+            } catch (TYXException TYXException) {
+                TYXException.printStackTrace();
+                return;
             }
             parseFrame.setTokens(tokens);
             semanticFrame.setTokens(tokens);

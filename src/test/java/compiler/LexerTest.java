@@ -1,7 +1,7 @@
 package compiler;
 
 import entity.Text;
-import exception.InputException;
+import exception.TYXException;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -21,7 +21,7 @@ class LexerTest {
         grammar.init("lexerGrammar1.txt");
         try {
             lexer.run(code, grammar);
-        } catch (InputException e) {
+        } catch (TYXException e) {
             //e.printStackTrace();
             System.out.println(e.getMessage());
         }

@@ -1,17 +1,14 @@
 package frame;
 
-import compiler.Lexer;
 import compiler.Parse;
 import entity.ParseResult;
 import entity.Text;
 import entity.Tokens;
-import exception.InputException;
+import exception.TYXException;
 import tool.IOTools;
 
 import javax.swing.*;
-import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumn;
-import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -150,8 +147,8 @@ public class ParseFrame extends JFrame {
             gotoFrame=new GotoFrame();
             try {
                 gotoFrame.init(parse.createGoto(parseGrammar));
-            } catch (InputException inputException) {
-                inputException.printStackTrace();
+            } catch (TYXException TYXException) {
+                TYXException.printStackTrace();
             }
             gotoFrame.setVisible(true);
         }
@@ -176,8 +173,9 @@ public class ParseFrame extends JFrame {
                 parseResult=parse.run(parseGrammar, tokens);
             }catch (IOException ioException) {
                 ioException.printStackTrace();
-            } catch (InputException inputException) {
-                inputException.printStackTrace();
+            } catch (TYXException TYXException) {
+                TYXException.printStackTrace();
+                return;
             }
             Object[][] rowData=new Object[parseResult.getRows()][4];
             List<ParseResult.Line> lines=parseResult.getStack();
@@ -189,11 +187,6 @@ public class ParseFrame extends JFrame {
             }
             Object[] columnNames = {"分析栈", "状态栈", "下一字符",  "action"};
             JTable table = new JTable(rowData, columnNames);
-//
-//            table.getColumnModel().getColumn(0).setWidth(300);
-//            table.getColumnModel().getColumn(1).setWidth(400);
-//            table.getColumnModel().getColumn(2).setWidth(100);
-//            table.getColumnModel().getColumn(3).setWidth(200);
             TableColumn tableColumn = null;
             for (int i = 0; i < 4; i++) {
                 tableColumn = table.getColumnModel().getColumn(i);

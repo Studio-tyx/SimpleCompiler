@@ -1,7 +1,7 @@
 package compiler;
 
 import entity.*;
-import exception.InputException;
+import exception.TYXException;
 
 import java.io.IOException;
 
@@ -17,10 +17,11 @@ public class Parse {
      *
      * @param grammar 语法
      * @param code    代码
+     * @return ParseResult
      * @throws IOException    文件读写异常
-     * @throws InputException 语法格式异常
+     * @throws TYXException 语法格式异常
      */
-    public ParseResult run(Text grammar, Tokens code) throws IOException, InputException {
+    public ParseResult run(Text grammar, Tokens code) throws IOException, TYXException {
         ParseResult res;
         ParseDFA parseDFA = new ParseDFA();
         parseDFA.createGraph(grammar);
@@ -34,14 +35,21 @@ public class Parse {
         return res;
     }
 
-    public GOTO createGoto(Text grammar) throws InputException {
+    /**
+     * 返回Goto表（用于展示）
+     *
+     * @param grammar 文法文件
+     * @return GOTO
+     * @throws TYXException 语法格式异常
+     */
+    public GOTO createGoto(Text grammar) throws TYXException {
         GOTO gotoTable;
         ParseDFA parseDFA=new ParseDFA();
-        parseDFA.createGraph(grammar);
+        parseDFA.createGraph(grammar);  //创建语法图
         ParseGoto parseGoto=new ParseGoto();
-        parseGoto.init(grammar);
-        parseGoto.createGoto(parseDFA);
-        gotoTable=parseGoto.getGotoTable();
+        parseGoto.init(grammar);    //语法初始化
+        parseGoto.createGoto(parseDFA); //创建Goto表
+        gotoTable=parseGoto.getGotoTable(); //返回
         return gotoTable;
     }
 }

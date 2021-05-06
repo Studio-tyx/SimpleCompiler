@@ -1,5 +1,8 @@
-public class helloworld {
-	public void main(String[] args) {
-		a=b*c+2*3;
-	}
-}
+aa
+ab
+aabb
+aaba
+baba
+abab
+ababab
+aabbaa

@@ -7,14 +7,14 @@ import java.util.List;
 /**
  * @author TYX
  * @name GOTO
- * @description
+ * @description Goto表的数据结构
  * @createTime 2021/5/5 20:12
  **/
 public class GOTO {
     private String[][] Goto;    //Goto表
     private List<Character> terminals;  //终结符集合
     private List<Character> nonTerminals;   //非终结符集合
-    private int statusNumber;
+    private int statusNumber;   //状态数
 
     public GOTO(List<Character> terminals, List<Character> nonTerminals) {
         this.terminals = terminals;

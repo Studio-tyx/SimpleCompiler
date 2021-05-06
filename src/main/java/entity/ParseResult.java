@@ -6,15 +6,15 @@ import java.util.List;
 /**
  * @author TYX
  * @name ParseResult
- * @description
+ * @description 语法分析的结果数据结构
  * @createTime 2021/5/5 14:42
  **/
 public class ParseResult {
-    private List<Line> stack;
-    private boolean res;
-    private String information;
-    private List<String> quaternions;
-    private GOTO gotoTable;
+    private List<Line> stack;   //分析栈
+    private boolean res;    //分析结果
+    private String information; //分析信息（期待的下一字符）
+    private List<String> quaternions;   //四元式
+    private GOTO gotoTable; //Goto表
 
     public ParseResult() {
     }

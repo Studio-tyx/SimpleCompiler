@@ -4,7 +4,7 @@ import compiler.Parse;
 import entity.ParseResult;
 import entity.Text;
 import entity.Tokens;
-import exception.InputException;
+import exception.TYXException;
 import tool.IOTools;
 
 import javax.swing.*;
@@ -137,8 +137,9 @@ public class SemanticFrame extends JFrame {
                 parseResult=parse.run(semanticGrammar, tokens);
             }catch (IOException ioException) {
                 ioException.printStackTrace();
-            } catch (InputException inputException) {
-                inputException.printStackTrace();
+            } catch (TYXException TYXException) {
+                TYXException.show();
+                TYXException.printStackTrace();
             }
             List<String> quaternions=parseResult.getQuaternions();
             String quaternionString="";

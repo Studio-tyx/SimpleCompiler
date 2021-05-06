@@ -80,6 +80,13 @@ public class LinkGraph<T, W> {
         return;
     }
 
+    /**
+     * 根据当前顶点和边找下一顶点
+     *
+     * @param thisVertex 当前顶点
+     * @param weight 边（权重）
+     * @return 下一顶点
+     */
     public T findNextVertex(T thisVertex, W weight) {
         for (Vertex<T, W> vertex : vertices) {
             if (vertex.name.equals(thisVertex)) {

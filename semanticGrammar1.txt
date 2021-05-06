@@ -21,10 +21,10 @@ F->w(i>=r){A}
 F->i=N;#assign
 N->E#transmit
 N->N+E#1.value+2.value print
-N->N-E#1.value-2.value print()
+N->N-E#1.value-2.value print
 E->B#transmit
-E->E*B#1.value*2.value print()
-E->E/B#1.value/2.value print()
+E->E*B#1.value*2.value print
+E->E/B#1.value/2.value print
 B->(N)#transmit
 B->i#0.value=1.real
 B->r#0.value=1.real

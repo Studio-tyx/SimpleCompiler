@@ -1,6 +1,8 @@
-void main(String[] args){
+public class helloworld{
+    void main(String[] args){
 
-double d=3E+1,b=1+2i,aa=3i,a=-2i,e=2E-10;
-if(a==b)d=a+0.001;
-System.out.println("Hello, world!");//this is note
+        double d=3E+1,b=1+2i,aa=3i,a=-2i,e=2E-10;
+        if(a==b)d=a+0.001;
+        System.out.println("Hello, world!");//this is note
+    }
 }

@@ -1,6 +1,6 @@
 package entity;
 
-import exception.InputException;
+import exception.TYXException;
 import org.junit.jupiter.api.Test;
 import tool.ShowTools;
 
@@ -20,7 +20,7 @@ class ParseDFATest {
         parseGoto.init(text);
         try {
             parseGoto.createGoto(parseDFA);
-        } catch (InputException e) {
+        } catch (TYXException e) {
             e.printStackTrace();
         }
     }

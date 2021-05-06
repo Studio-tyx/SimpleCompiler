@@ -1,7 +1,7 @@
 package compiler;
 
 import entity.*;
-import exception.InputException;
+import exception.TYXException;
 import org.junit.jupiter.api.Test;
 import tool.ShowTools;
 
@@ -19,7 +19,7 @@ class ParseTest {
         Tokens tokens = null;
         try {
             tokens = lexer.run(code, lexerGrammar);
-        } catch (InputException e) {
+        } catch (TYXException e) {
             e.printStackTrace();
         }
 
@@ -27,7 +27,7 @@ class ParseTest {
         parseGrammar.init("semanticGrammar1.txt");
         try {
             parse.run(parseGrammar, tokens);
-        } catch (InputException e) {
+        } catch (TYXException e) {
             e.printStackTrace();
         }
     }
