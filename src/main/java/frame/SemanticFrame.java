@@ -8,6 +8,7 @@ import exception.TYXException;
 import tool.IOTools;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -16,19 +17,12 @@ import java.util.List;
 /**
  * @author TYX
  * @name SemanticFrame
- * @description
+ * @description 语义分析窗口
  * @createTime 2021/5/5 18:51
  **/
 public class SemanticFrame extends JFrame {
     private JPanel panel;
-    private JButton chooseSemanticButton;
-    private JButton semanticAnalyseButton;
-    private JLabel codeLabel;
     private JLabel semanticSourceLabel;
-    private JLabel tokenLabel;
-    private JScrollPane codeScroll;
-    private JScrollPane semanticScroll;
-    private JScrollPane quaternionScroll;
     private JTextArea codeTextArea;
     private JTextArea semanticTextArea;
     private JTextArea quaternionTextArea;
@@ -38,10 +32,16 @@ public class SemanticFrame extends JFrame {
 
     private Tokens tokens;
 
+    /**
+     * 构造器
+     */
     public SemanticFrame(){
         init();
     }
 
+    /**
+     * 初始化
+     */
     public void init(){
         setTitle("语义分析");
         setBounds(100,100,750,600);
@@ -49,77 +49,128 @@ public class SemanticFrame extends JFrame {
         panel=new JPanel();
         panel.setLayout(null);
 
-        chooseSemanticButton=new JButton("选择语义");
-        chooseSemanticButton.setBounds(120,50,100,30);
+        JButton chooseSemanticButton = new JButton("选择语义");
+        chooseSemanticButton.setFont(new Font("黑体", Font.PLAIN,20));
+        chooseSemanticButton.setBounds(120,50,140,30);
         chooseSemanticButton.addActionListener(new ChooseSemanticActionListener());
         panel.add(chooseSemanticButton);
 
-        semanticAnalyseButton=new JButton("语义分析");
-        semanticAnalyseButton.setBounds(120,100,100,30);
+        JButton semanticAnalyseButton = new JButton("语义分析");
+        semanticAnalyseButton.setFont(new Font("黑体", Font.PLAIN,20));
+        semanticAnalyseButton.setBounds(120,100,140,30);
         semanticAnalyseButton.addActionListener(new SemanticAnalyseActionListener());
         panel.add(semanticAnalyseButton);
 
-        codeLabel=new JLabel();
-        codeLabel.setBounds(150,150,300,30);
+        JLabel codeLabel = new JLabel();
+        codeLabel.setBounds(170,150,300,30);
         codeLabel.setText("code:");
+        codeLabel.setFont(new Font("Courier", Font.PLAIN,20));
         panel.add(codeLabel);
 
         semanticSourceLabel=new JLabel();
-        semanticSourceLabel.setSize(800,30);
+        semanticSourceLabel.setSize(450,30);
         semanticSourceLabel.setLocation(300,50);
         semanticSourceLabel.setText("");
         panel.add(semanticSourceLabel);
 
-        tokenLabel=new JLabel();
+        JLabel tokenLabel = new JLabel();
         tokenLabel.setSize(200,30);
-        tokenLabel.setLocation(150,370);
-        tokenLabel.setText("tokens:");
+        tokenLabel.setLocation(170,370);
+        tokenLabel.setText("四元式:");
+        tokenLabel.setFont(new Font("Courier", Font.PLAIN,20));
         panel.add(tokenLabel);
 
         codeTextArea=new JTextArea();
-        codeScroll=new JScrollPane(codeTextArea);
-        codeScroll.setBounds(30, 180, 300, 170);
+        JScrollPane codeScroll = new JScrollPane(codeTextArea);
+        codeScroll.setBounds(30, 180, 350, 170);
         panel.add(codeScroll);
 
         semanticTextArea=new JTextArea();
-        semanticScroll=new JScrollPane(semanticTextArea);
-        semanticScroll.setBounds(400,100,300,400);
+        JScrollPane semanticScroll = new JScrollPane(semanticTextArea);
+        semanticScroll.setBounds(430,100,300,400);
         panel.add(semanticScroll);
 
         quaternionTextArea=new JTextArea();
-        quaternionScroll=new JScrollPane(quaternionTextArea);
-        quaternionScroll.setBounds(30,400,300,100);
+        JScrollPane quaternionScroll = new JScrollPane(quaternionTextArea);
+        quaternionScroll.setBounds(30,400,350,100);
         panel.add(quaternionScroll);
 
         add(panel);
         setVisible(false);
     }
 
+    /**
+     * 代码初始化
+     */
     public void turn(){
         codeTextArea.setText(IOTools.read(codeURL));
+        codeTextArea.setFont(new Font(null, Font.PLAIN,15));
     }
 
+    /**
+     * 设置代码URL
+     * @param codeURL 代码URL String
+     */
     public void setCodeURL(String codeURL) {
         this.codeURL = codeURL;
     }
 
+    /**
+     * 设置Tokens
+     * @param tokens Tokens Tokens
+     */
     public void setTokens(Tokens tokens) {
         this.tokens = tokens;
     }
 
+    /**
+     * 选择语义按钮监听事件
+     */
     class ChooseSemanticActionListener implements ActionListener{
+        /**
+         * 监听事件发生
+         *
+         * @param e 监听事件
+         */
         public void actionPerformed(ActionEvent e) {
             semanticURL=IOTools.chooseFile();
-            semanticSourceLabel.setText(semanticURL);
+            semanticSourceLabel.setText("语义路径:"+semanticURL);
             semanticTextArea.setText(IOTools.read(semanticURL));
+            semanticTextArea.setFont(new Font(null, Font.PLAIN,15));
             panel.validate();
             validate();
             setVisible(true);
         }
     }
 
+    /**
+     * 语义分析按钮监听事件
+     */
     class SemanticAnalyseActionListener implements ActionListener{
+        /**
+         * 监听事件发生
+         *
+         * @param e 监听事件
+         */
         public void actionPerformed(ActionEvent e) {
+            if(codeURL==null){
+                try {
+                    throw new TYXException("Input error: please input code!");
+                } catch (TYXException TYXException) {
+                    System.out.println("hey");
+                    TYXException.printStackTrace();
+                    return;
+                }
+            }
+            if(semanticURL==null){
+                try {
+                    throw new TYXException("Input error: please input grammar!");
+                } catch (TYXException TYXException) {
+                    System.out.println("hey");
+                    TYXException.printStackTrace();
+                    return;
+                }
+            }
             Text code = new Text(), semanticGrammar = new Text();
             ParseResult parseResult=new ParseResult();
             try {
@@ -135,8 +186,6 @@ public class SemanticFrame extends JFrame {
             }
             try {
                 parseResult=parse.run(semanticGrammar, tokens);
-            }catch (IOException ioException) {
-                ioException.printStackTrace();
             } catch (TYXException TYXException) {
                 TYXException.show();
                 TYXException.printStackTrace();
@@ -147,6 +196,7 @@ public class SemanticFrame extends JFrame {
                 quaternionString+=(quarter+"\n");
             }
             quaternionTextArea.setText(quaternionString);
+            quaternionTextArea.setFont(new Font(null, Font.PLAIN,15));
             panel.validate();
             validate();
         }

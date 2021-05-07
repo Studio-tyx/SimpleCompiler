@@ -1,4 +1,4 @@
-public class helloworld{
+class helloworld{
     void main(String[] args){
 
         double d=3E+1,b=1+2i,aa=3i,a=-2i,e=2E-10;

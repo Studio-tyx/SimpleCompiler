@@ -18,18 +18,38 @@ public class ParseDFA {
     private Text text;  //输入语法
     private List<Set<LRLine>> status;   //图结构中的状态集合
 
+    /**
+     * 返回图结构
+     *
+     * @return 图结构 List of Set of LRLine and Character
+     */
     public LinkGraph<Set<LRLine>, Character> getGraph() {
         return graph;
     }
 
+    /**
+     * 返回图结构中的状态集合
+     *
+     * @return 图结构中的状态集合 List of Set of LRLine
+     */
     public List<Set<LRLine>> getStatus() {
         return status;
     }
 
+    /**
+     * 返回输入语法
+     *
+     * @return 输入语法 Text
+     */
     public Text getText() {
         return text;
     }
 
+    /**
+     * 设置输入语法
+     *
+     * @param text 输入语法 Text
+     */
     public void setText(Text text) {
         this.text = text;
     }
@@ -37,7 +57,7 @@ public class ParseDFA {
     /**
      * 语法图初始化
      *
-     * @param text 语法文件
+     * @param text 语法文件 Text
      */
     public void createGraph(Text text) {
         //初始化
@@ -72,11 +92,11 @@ public class ParseDFA {
     }
 
     /**
-     * 找下一个可以移动的边
+     * 找下一个可以移动的边<br>
      * 如{"·abc,A·bcd"} 则返回{'a','b'}
      *
-     * @param I 当前状态集
-     * @return 下一个移动边的集合
+     * @param I 当前状态集 Set of LRLine
+     * @return 下一个移动边的集合 Set of Character
      */
     public Set<Character> findNextMove(Set<LRLine> I) {
         Set<Character> res = new HashSet<Character>();
@@ -92,13 +112,13 @@ public class ParseDFA {
     }
 
     /**
-     * 求向前搜索符
-     * 项目[A->α.Bβ,a]，当β能导出空串时，该项目的搜索符a传播到项目[B->…,a]
-     * 当β不能导出空串时，搜索符为first(βa)
+     * 求向前搜索符<br>
+     * 项目[A-》α.Bβ,a]，当β能导出空串时，该项目的搜索符a传播到项目[B-》…,a]<br>
+     * 当β不能导出空串时，搜索符为first(βa)<br>
      * 上述关于空串的推导方法来源于 https://blog.csdn.net/qq_41734797/article/details/93253915
      *
-     * @param lrLine 需要求first集的字符串
-     * @return 向前搜素符集合
+     * @param lrLine 需要求first集的字符串 LRLine
+     * @return 向前搜素符集合 Set of Character
      */
     public Set<Character> findForwardSearch(LRLine lrLine) {
         Set<Character> res = new HashSet<Character>();
@@ -123,11 +143,11 @@ public class ParseDFA {
     }
 
     /**
-     * 根据句子求first集
+     * 根据句子求first集<br>
      * （如果句子只能推导出空字符串 则返回为空）
      *
-     * @param string 句子
-     * @return first集
+     * @param string 句子 String
+     * @return first集  Set of Character
      */
     public Set<Character> findFirst(String string) {
         Set<Character> res = new HashSet<Character>();
@@ -147,8 +167,8 @@ public class ParseDFA {
     /**
      * 某个非终结符是否会推导出空字符
      *
-     * @param nonTerminal 非终结符
-     * @return 是否会推导出空字符串
+     * @param nonTerminal 非终结符 Character
+     * @return 是否会推导出空字符串 boolean
      */
     public boolean isAllNUll(Character nonTerminal) {
         boolean res = true;
@@ -164,8 +184,8 @@ public class ParseDFA {
     /**
      * 判断某个非终结符是否可推空+非空
      *
-     * @param nonTerminal 非终结符
-     * @return boolean
+     * @param nonTerminal 非终结符 Character
+     * @return 某个非终结符是否可推空+非空 boolean
      */
     public boolean canBeNUll(Character nonTerminal) {
         boolean res = false;
@@ -181,8 +201,8 @@ public class ParseDFA {
     /**
      * 某个状态是否已经到底
      *
-     * @param set 需要判断的状态
-     * @return 是否结束
+     * @param set 需要判断的状态 Set of LRLine
+     * @return 是否结束 boolean
      */
     public boolean moveEnd(Set<LRLine> set) {
         boolean res = true;
@@ -195,8 +215,8 @@ public class ParseDFA {
     /**
      * 某个句子是否已经结束
      *
-     * @param line 句子
-     * @return 是否结束
+     * @param line 句子 String
+     * @return 是否结束 boolean
      */
     public boolean endProduction(String line) {
         int index = line.indexOf("·");
@@ -206,9 +226,9 @@ public class ParseDFA {
     /**
      * 状态转换
      *
-     * @param I      当前状态集
-     * @param weight 输入的终结符
-     * @return 下一个状态的集合
+     * @param I      当前状态集 Set of LRLine
+     * @param weight 输入的终结符 Character
+     * @return 下一个状态的集合 Set of LRLine
      */
     public Set<LRLine> findNextStatus(Set<LRLine> I, Character weight) {
         return closure(move(I, weight));
@@ -217,9 +237,9 @@ public class ParseDFA {
     /**
      * 将终结符边加入到状态集
      *
-     * @param I      当前状态集
-     * @param weight 读入的终结符
-     * @return 加入下一条边之后到达的状态
+     * @param I      当前状态集 Set of LRLine
+     * @param weight 读入的终结符 Character
+     * @return 加入下一条边之后到达的状态 Set of LRLine
      */
     public Set<LRLine> move(Set<LRLine> I, Character weight) {
         Set<LRLine> res = new HashSet<LRLine>();
@@ -240,19 +260,17 @@ public class ParseDFA {
     }
 
     /**
-     * epsilon-closure 寻找当前状态的闭包
-     * 例如S->a·Pm 则加入P->·p
+     * epsilon-closure 寻找当前状态的闭包<br>
+     * 例如S-》a·Pm 则加入P-》·p
      *
-     * @param I 当前状态
-     * @return 状态的闭包（加入epsilon边可以到达的状态集）
+     * @param I 当前状态 Set of LRLine
+     * @return 状态的闭包（加入epsilon边可以到达的状态集） Set of LRLine
      */
     public Set<LRLine> closure(Set<LRLine> I) {
         //我比较closure是否增加的方法：比较变化前后两个集合的大小
         //增长组
         List<LRLine> plus = new ArrayList<LRLine>();
-        for (LRLine lrLine : I) {
-            plus.add(lrLine);
-        }
+        plus.addAll(I);
         int formerSize = plus.size() - 1;
 
         //增长组>对照组
@@ -289,9 +307,9 @@ public class ParseDFA {
     /**
      * 重写了List.exist方法（两个LRLine相等只需要内容相等即可）
      *
-     * @param list   list
-     * @param lrLine list中的对象
-     * @return 是否存在某个LRLine
+     * @param list   list List of LRLine
+     * @param lrLine list中的对象 LRLine
+     * @return 是否存在某个LRLine boolean
      */
     public boolean existLRLine(List<LRLine> list, LRLine lrLine) {
         for (LRLine line : list) {
@@ -303,12 +321,12 @@ public class ParseDFA {
     }
 
     /**
-     * 重写了LRLine的equals方法
+     * 重写了LRLine的equals方法<br>
      * 即内容相等就可以相等了
      *
-     * @param one   一个LRLine
-     * @param other 另一个LRLine
-     * @return 两个LRLine内容是否相等
+     * @param one   一个LRLine LRLine
+     * @param other 另一个LRLine LRLine
+     * @return 两个LRLine内容是否相等 boolean
      */
     public boolean LRLineEqual(LRLine one, LRLine other) {
         return one.getContent().equals(other.getContent()) && one.getStart().equals(other.getStart())
@@ -319,8 +337,8 @@ public class ParseDFA {
     /**
      * 重写了Set的equals方法（根据内容判断）
      *
-     * @param one   Set
-     * @param other Set
+     * @param one   包含LRLine的集合 Set of LRLine
+     * @param other 包含LRLine的集合 Set of LRLine
      * @return 两个集合是否相等
      */
     public boolean setEquals(Set<LRLine> one, Set<LRLine> other) {
@@ -337,8 +355,8 @@ public class ParseDFA {
     /**
      * 重写了Set作为List元素的exist方法（根据内容判断）
      *
-     * @param list  List
-     * @param other Set
+     * @param list  List List of Set of LRLine
+     * @param other Set Set of LRLine
      * @return list中是否存在other
      */
     public boolean existSet(List<Set<LRLine>> list, Set<LRLine> other) {
@@ -351,8 +369,8 @@ public class ParseDFA {
     /**
      * 重写了Set作为List元素的IndexOf方法（根据内容判断）
      *
-     * @param list      List
-     * @param lrLineSet Set
+     * @param list      List List of Set of LRLine
+     * @param lrLineSet Set Set of LRLine
      * @return 下标
      */
     public int getIndex(List<Set<LRLine>> list, Set<LRLine> lrLineSet) {
@@ -362,5 +380,4 @@ public class ParseDFA {
         }
         return -1;
     }
-
 }

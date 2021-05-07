@@ -11,13 +11,16 @@ import java.util.List;
 /**
  * @author TYX
  * @name GotoFrame
- * @description
+ * @description Goto表的展示窗口
  * @createTime 2021/5/5 20:21
  **/
 public class GotoFrame extends JFrame {
     private JPanel panel;
     private JScrollPane gotoScroll;
 
+    /**
+     * 构造器
+     */
     public GotoFrame(){
         setTitle("Goto");
         setBounds(20,10,1600,900);
@@ -31,6 +34,11 @@ public class GotoFrame extends JFrame {
         setVisible(false);
     }
 
+    /**
+     * 初始化
+     *
+     * @param gotoTable Goto表 GOTO
+     */
     public void init(GOTO gotoTable){
         List<Character> terminals=gotoTable.getTerminals();
         List<Character> nonTerminals=gotoTable.getNonTerminals();

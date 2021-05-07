@@ -17,12 +17,12 @@ import java.util.Stack;
 public class ParseGoto {
     private GOTO gotoTable;
     private Text text;  //语法
-    private List<TreeNode> treeNodes;
 
     /**
-     * 成员变量初始化 由语法分析终结符与非终结符
+     * 成员变量初始化<br>
+     *     由语法分析终结符与非终结符
      *
-     * @param text 语法读入
+     * @param text 语法读入 Text
      */
     public void init(Text text) {
         this.text = text;
@@ -55,7 +55,7 @@ public class ParseGoto {
     /**
      * 由DFA转换为Goto表
      *
-     * @param parseDFA 输入的DFA
+     * @param parseDFA 输入的DFA ParseDFA
      * @throws TYXException 非LR(1)文法报错
      */
     public void createGoto(ParseDFA parseDFA) throws TYXException {
@@ -119,21 +119,22 @@ public class ParseGoto {
     /**
      * 根据tokens判断是否符合语法
      *
-     * @param tokens token集合
-     * @return 是否符合语法
+     * @param tokens token集合 Tokens
+     * @return 语法分析结果 ParseResult
+     * @throws TYXException 非LR1文法异常
      */
     public ParseResult check(Tokens tokens) throws TYXException {
         Tokens thisTokens = tokens; //把形参变成实参 主要是也没啥必要写一遍setTokens
         boolean res = false;    //结果
         Stack<Integer> status = new Stack<Integer>();   //状态栈
         Stack<Character> characters = new Stack<Character>();   //符号栈
-        treeNodes = new ArrayList<TreeNode>();   //现有的语法树（或语法子树）
+        List<TreeNode> treeNodes = new ArrayList<TreeNode>();   //现有的语法树（或语法子树）
         int countTemp = 0;  //临时变量计数器
         List<ParseResult.Line> lines=new ArrayList<ParseResult.Line>();
         List<String> quaternions=new ArrayList<String>();
         List<Character> terminals= gotoTable.getTerminals();  //终结符集合
         List<Character> nonTerminals= getGotoTable().getNonTerminals();   //非终结符集合
-        String information="";
+        StringBuilder information= new StringBuilder();
 
         //初态
         status.push(0);
@@ -155,21 +156,24 @@ public class ParseGoto {
             Integer nowStatus = status.peek();  //当前状态
             String next=gotoTable.getByChar(nowStatus,thisChar);
 
-            String stackChar="",stackStatus="",stackNext="",stackAction="";
+            StringBuilder stackChar= new StringBuilder();
+            StringBuilder stackStatus= new StringBuilder();
+            String stackNext="";
+            String stackAction="";
             //输出
             for (Character ch : characters) {
-                stackChar+=ch;
+                stackChar.append(ch);
             }
             for (Integer integer : status) {
-                stackStatus+=(integer+",");
+                stackStatus.append(integer).append(",");
             }
             stackNext=thisChar.toString();
-            stackAction=next;
-            lines.add(new ParseResult.Line(stackChar,stackStatus,stackNext,stackAction));
 
             if (next.charAt(0) == 'S') {    //移进
                 characters.push(thisChar);  //符号栈压入
                 status.push(Integer.valueOf(next.substring(1)));    //状态栈压入
+                stackAction="移进";
+                lines.add(new ParseResult.Line(stackChar.toString(), stackStatus.toString(),stackNext,stackAction));
 
                 //新建语法树节点并加入语法森林
                 TreeNode newNode;
@@ -184,6 +188,9 @@ public class ParseGoto {
                 ProcessLine processLine = text.getContent().get(Integer.parseInt(next.substring(1)) - 1);   //根据r后的数字选择产生式规约
                 String start = processLine.getLine().split("#")[0].substring(0, 1);
                 String production = processLine.getLine().split("#")[0].substring(3);
+                stackAction="规约 "+start+"->"+production;
+                lines.add(new ParseResult.Line(stackChar.toString(), stackStatus.toString(),stackNext,stackAction));
+
 
                 List<TreeNode> children = new ArrayList<TreeNode>();    //子树
                 if (!production.equals("@")) {  //非空字符则按长度弹栈
@@ -208,7 +215,7 @@ public class ParseGoto {
 
                 TreeNode newNode = new TreeNode(first.toString(), children);    //构建子树
                 if (processLine.getLine().contains("#")) {  //有语义分析的内容
-                    String quaternion="";
+                    StringBuilder quaternion= new StringBuilder();
                     String semantic = processLine.getLine().split("#")[1];  //分离语义分析内容
                     if (semantic.equals("transmit")) {  //值传递
                         if (production.contains("(")) newNode.setValue(children.get(1).getValue());
@@ -222,31 +229,30 @@ public class ParseGoto {
                         newNode.setValue("T" + countTemp);
                         countTemp++;
                     } else if (semantic.contains("assign")) {   //赋值
-                        quaternion+=":=\t";
+                        quaternion.append(":=\t");
                         TreeNode child = children.get(2);
-                        if (child.getValue() == null) quaternion+=(child.getName() + "\t_\t");
-                        else quaternion+=(child.getValue() + "\t_\t");
-                        quaternion+=(children.get(0).getName());
+                        if (child.getValue() == null) quaternion.append(child.getName()).append("\t_\t");
+                        else quaternion.append(child.getValue()).append("\t_\t");
+                        quaternion.append(children.get(0).getName());
 
-                    } else {
                     }
                     if (semantic.contains("print")) {   //打印
-                        if (semantic.contains("=") || production.contains(";")) quaternion+=":=\t";
+                        if (semantic.contains("=") || production.contains(";")) quaternion.append(":=\t");
                         for (TreeNode tn : children) {
                             if (tn.getValue() == null) {
-                                if (!tn.getName().equals("=")) quaternion+=(tn.getName() + "\t");
+                                if (!tn.getName().equals("=")) quaternion.append(tn.getName()).append("\t");
                             }
                         }
                         for (TreeNode tn : children) {
                             if (tn.getValue() != null && !tn.getName().equals("="))
-                                quaternion+=(tn.getValue() + "\t");
+                                quaternion.append(tn.getValue()).append("\t");
                         }
-                        if (children.size() < 2) quaternion+=("_\t");
-                        quaternion+=(newNode.getValue() + "\t");
+                        if (children.size() < 2) quaternion.append("_\t");
+                        quaternion.append(newNode.getValue()).append("\t");
                     }
                     newNode.setChildren(children);
                     //quaternion+="\n";
-                    if(quaternion!="")  quaternions.add(quaternion);
+                    if(!quaternion.toString().equals(""))  quaternions.add(quaternion.toString());
                 }
                 treeNodes.add(newNode);
                 continue;
@@ -254,15 +260,14 @@ public class ParseGoto {
             else {  //基本是出错的
                 for(int ii=0;ii<terminals.size()+nonTerminals.size();ii++){
                     if(!gotoTable.getByInt(nowStatus,ii).equals("n")){
-                        if(ii<terminals.size())information+=(terminals.get(ii)+",");
-                        else information+=(nonTerminals.get(ii-terminals.size())+",");
+                        if(ii<terminals.size()) information.append(terminals.get(ii)).append(",");
+                        else information.append(nonTerminals.get(ii - terminals.size())).append(",");
                     }
                 }
                 break;
             }
             i++;    //下一token
         }
-        ParseResult result=new ParseResult(lines,res,information,quaternions);
-        return result;
+        return new ParseResult(lines,res, information.toString(),quaternions);
     }
 }

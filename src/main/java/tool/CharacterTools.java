@@ -10,8 +10,8 @@ public final class CharacterTools {
     /**
      * 是否为大写字符
      *
-     * @param ch 需要判断的字符
-     * @return 是否为大写
+     * @param ch 需要判断的字符 char
+     * @return 是否为大写 boolean
      */
     public static boolean isUpper(char ch) {
         return (ch >= 'A' && ch <= 'Z');
@@ -20,8 +20,8 @@ public final class CharacterTools {
     /**
      * 是否为小写字符
      *
-     * @param ch 需要判断的字符
-     * @return 是否为小写
+     * @param ch 需要判断的字符 char
+     * @return 是否为小写 boolean
      */
     public static boolean isLower(char ch) {
         return ((ch >= 'a' && ch <= 'z'));
@@ -30,8 +30,8 @@ public final class CharacterTools {
     /**
      * 是否为空字符@
      *
-     * @param ch 需要判断的字符
-     * @return 是否为空字符@
+     * @param ch 需要判断的字符 char
+     * @return 是否为空字符@ boolean
      */
     public static boolean isAt(char ch) {
         return (ch == '@');
@@ -40,8 +40,8 @@ public final class CharacterTools {
     /**
      * 是否为其他符号
      *
-     * @param ch 需要判断的字符
-     * @return 是否为其他符号
+     * @param ch 需要判断的字符 char
+     * @return 是否为其他符号 boolean
      */
     public static boolean isPunctuation(char ch) {
         return (ch == '(') || (ch == ')') || (ch == '{') || (ch == '}') || (ch == ';') || (ch == ',') || (ch == '=');

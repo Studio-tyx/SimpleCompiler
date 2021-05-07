@@ -17,9 +17,9 @@ public class LexerDFA {
     /**
      * 状态转移矩阵增加边
      *
-     * @param thisVertex 当前结点
-     * @param nextVertex 下一结点
-     * @param weight     边的权重
+     * @param thisVertex 当前结点 Integer
+     * @param nextVertex 下一结点 Integer
+     * @param weight     边的权重 Integer
      */
     public void addEdge(Integer thisVertex, Integer nextVertex, Integer weight) {
         matrix[thisVertex][weight] = nextVertex;
@@ -27,9 +27,11 @@ public class LexerDFA {
     }
 
     /**
-     * NFA->DFA
+     * NFA=》DFA<br>
+     *     将NFA转换为DFA
      *
-     * @param lexerNFA NFA
+     * @param lexerNFA NFA LexerNFA
+     * @return NFA展示String（Frame展示用） List of String
      */
     public List<String> init(LexerNFA lexerNFA) {
         List<Set<Character>> statusMap = new ArrayList<Set<Character>>();   //DFA状态与NFA子集的对应关系 int<->set<Character>
@@ -90,8 +92,8 @@ public class LexerDFA {
     /**
      * 判断标识符是否符合文法
      *
-     * @param word 单词
-     * @return 是否符合文法
+     * @param word 单词 String
+     * @return 是否符合文法 boolean
      */
     public boolean check(String word) {
         int status = 0;
@@ -122,6 +124,8 @@ public class LexerDFA {
 
     /**
      * DFA展示 便于输出
+     *
+     * @return DFA展示String（Frame展示用） List of String
      */
     public List<String> getDFA() {
         List<String> res=new ArrayList<String>();

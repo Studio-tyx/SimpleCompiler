@@ -1,6 +1,7 @@
 S->aA
 S->bB
 S->@
+
 A->aB
 A->bA
 B->aS

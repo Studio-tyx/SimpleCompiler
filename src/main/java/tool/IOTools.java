@@ -10,9 +10,15 @@ import java.io.*;
  * @createTime 2021/5/4 14:20
  **/
 public final class IOTools {
+    /**
+     * 选择文件
+     *
+     * @return 文件URL String
+     */
     public static String chooseFile(){
         String res = null;
-        JFileChooser chooser=new JFileChooser("D:\\Languages\\Java\\SimpleCompiler");
+        JFileChooser chooser=new JFileChooser(".\\");
+//        JFileChooser chooser=new JFileChooser("D:\\Languages\\Java\\SimpleCompiler");
         int ret=chooser.showOpenDialog(null);
         if(ret==JFileChooser.APPROVE_OPTION) {
             File file=chooser.getSelectedFile();
@@ -22,6 +28,12 @@ public final class IOTools {
         return res;
     }
 
+    /**
+     * 读取文件内容（返回连续String）
+     *
+     * @param url 文件URL String
+     * @return 文件内容 String
+     */
     public static String read(String url){
         String end = "";
         String str = "";

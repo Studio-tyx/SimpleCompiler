@@ -44,7 +44,8 @@ public class LexerNFA {
     /**
      * 根据读入的文本生成NFA（根据文本结构判断是左线性还是右线性）
      *
-     * @param text 输入的文本
+     * @param text 输入的文本 Text
+     * @return NFA展示String List of String
      * @throws TYXException 输入格式异常等
      */
     public List<String> init(Text text) throws TYXException {
@@ -73,7 +74,7 @@ public class LexerNFA {
     /**
      * 右线性文法的初始化
      *
-     * @param text 输入文本
+     * @param text 输入文本 Text
      * @throws TYXException 输入异常
      */
     public void initRight(Text text) throws TYXException {
@@ -118,7 +119,7 @@ public class LexerNFA {
     /**
      * 左线性文法的初始化
      *
-     * @param text 输入文本
+     * @param text 输入文本 Text
      * @throws TYXException 输入格式初始化
      */
     public void initLeft(Text text) throws TYXException {
@@ -161,11 +162,12 @@ public class LexerNFA {
     }
 
     /**
-     * NFA->DFA 根据读入的终结符寻找下一个状态
+     * NFA-》DFA<br>
+     *     根据读入的终结符寻找下一个状态
      *
-     * @param I      当前状态集
-     * @param weight 输入的终结符
-     * @return 下一个状态的集合
+     * @param I      当前状态集 Set of Character
+     * @param weight 输入的终结符 Set of Character
+     * @return 下一个状态的集合 Set of Character
      */
     public Set<Character> findNext(Set<Character> I, Character weight) {
         return closure(move(I, weight));
@@ -174,9 +176,9 @@ public class LexerNFA {
     /**
      * 将终结符边加入到状态集
      *
-     * @param I      当前状态集
-     * @param weight 读入的终结符
-     * @return 加入下一条边之后到达的状态
+     * @param I      当前状态集 Set of Character
+     * @param weight 读入的终结符 Character
+     * @return 加入下一条边之后到达的状态 Set of Character
      */
     public Set<Character> move(Set<Character> I, Character weight) {
         Set<Character> res = new HashSet<Character>();
@@ -195,10 +197,11 @@ public class LexerNFA {
     }
 
     /**
-     * epsilon-closure 寻找当前状态的闭包
+     * epsilon-closure<br>
+     *     寻找当前状态的闭包
      *
-     * @param I 当前状态
-     * @return 状态的闭包（加入epsilon边可以到达的状态集）
+     * @param I 当前状态 Set of Character
+     * @return 状态的闭包（加入epsilon边可以到达的状态集） Set of Character
      */
     public Set<Character> closure(Set<Character> I) {
         for (Character ch : I) {
@@ -230,6 +233,8 @@ public class LexerNFA {
 
     /**
      * NFA图结构的展示
+     *
+     * @return NFA展示String（Frame展示用） List of String
      */
     public List<String> getNFA() {
         List<String> res=new ArrayList<String>();
@@ -244,8 +249,8 @@ public class LexerNFA {
     /**
      * 集合展示 便于输出
      *
-     * @param set 集合
-     * @param <T> 类型自定
+     * @param set 集合 Set of T
+     * @param <T> 类型自定 T
      */
     public <T> void show(Set<T> set) {
         System.out.println("--set------");

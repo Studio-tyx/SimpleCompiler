@@ -6,42 +6,49 @@ import java.awt.*;
 /**
  * @author TYX
  * @name FAFrame
- * @description
+ * @description NFA&DFA的展示窗口
  * @createTime 2021/5/5 21:11
  **/
 public class FAFrame extends JFrame {
-    private JPanel panel;
-    private JScrollPane nfaScroll;
-    private JScrollPane dfaScroll;
-    private JTextArea nfaTextArea;
-    private JTextArea dfaTextArea;
-    private JLabel nfaLabel;
-    private JLabel dfaLabel;
+
+    /**
+     * 构造器
+     */
     public FAFrame() {
     }
+
+    /**
+     * 初始化
+     *
+     * @param NFA NFA java.util.List of String
+     * @param DFA DFA java.util.List of String
+     */
     public void init(java.util.List<String> NFA, java.util.List<String> DFA){
         setTitle("NFA&DFA");
         setBounds(100,100,670,700);
         setResizable(false);
-        panel=new JPanel();
+        JPanel panel = new JPanel();
         panel.setLayout(null);
 
-        nfaLabel=new JLabel();
+        JLabel nfaLabel = new JLabel();
         nfaLabel.setBounds(150,20,300,30);
         nfaLabel.setText("NFA:");
+        nfaLabel.setFont(new Font("Courier", Font.PLAIN,20));
         panel.add(nfaLabel);
 
-        dfaLabel=new JLabel();
+        JLabel dfaLabel = new JLabel();
         dfaLabel.setBounds(480,20,300,30);
         dfaLabel.setText("DFA:");
+        dfaLabel.setFont(new Font("Courier", Font.PLAIN,20));
         panel.add(dfaLabel);
 
         String nfa="";
         for(String str:NFA){
             nfa+=(str+"\n");
         }
-        nfaTextArea=new JTextArea(nfa);
-        nfaScroll=new JScrollPane(nfaTextArea);
+        JTextArea nfaTextArea = new JTextArea(nfa);
+        nfaTextArea.setFont(new Font(null, Font.PLAIN,15));
+        JScrollPane nfaScroll = new JScrollPane(nfaTextArea);
         nfaScroll.setBounds(20,50,300,570);
         panel.add(nfaScroll);
 
@@ -49,8 +56,9 @@ public class FAFrame extends JFrame {
         for(String str:DFA){
             dfa+=(str+"\n");
         }
-        dfaTextArea=new JTextArea(dfa);
-        dfaScroll=new JScrollPane(dfaTextArea);
+        JTextArea dfaTextArea = new JTextArea(dfa);
+        dfaTextArea.setFont(new Font(null, Font.PLAIN,15));
+        JScrollPane dfaScroll = new JScrollPane(dfaTextArea);
         dfaScroll.setBounds(350,50,300,570);
         panel.add(dfaScroll);
 

@@ -1,0 +1,11 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="SimpleCompiler:jar">
+    <output-path>$PROJECT_DIR$/src/main</output-path>
+    <root id="archive" name="SimpleCompiler.jar">
+      <element id="directory" name="META-INF">
+        <element id="file-copy" path="$PROJECT_DIR$/output/META-INF/MANIFEST.MF" />
+      </element>
+      <element id="module-output" name="SimpleCompiler" />
+    </root>
+  </artifact>
+</component>

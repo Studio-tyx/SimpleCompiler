@@ -14,6 +14,14 @@ public class LRLine {
     private Set<Character> forwardSearch;
     private final int productionNumber;
 
+    /**
+     * 构造器
+     *
+     * @param start 产生式左部 Character
+     * @param content 产生式内容 String
+     * @param forwardSearch 含向前搜索符的集合 Set of Character
+     * @param productionNumber 产生式行数 int
+     */
     public LRLine(Character start, String content, Set<Character> forwardSearch, int productionNumber) {
         this.start = start;
         this.content = content;
@@ -21,6 +29,11 @@ public class LRLine {
         this.productionNumber = productionNumber;
     }
 
+    /**
+     * 构造器（由另一句子构造）
+     *
+     * @param other 另一句子 LRLine
+     */
     public LRLine(LRLine other) {
         this.start = other.start;
         this.content = other.content;
@@ -28,6 +41,11 @@ public class LRLine {
         this.productionNumber = other.productionNumber;
     }
 
+    /**
+     * 构造器（由文本某一行初始化）
+     *
+     * @param processLine 文本的某一行 ProcessLine
+     */
     public LRLine(ProcessLine processLine) {
         this.start = processLine.getLine().charAt(0);
         if (processLine.getLine().contains("#")) {
@@ -47,26 +65,53 @@ public class LRLine {
                 && this.forwardSearch.equals(other.forwardSearch);
     }
 
+    /**
+     * 返回句子内容
+     *
+     * @return 句子内容 String
+     */
     public String getContent() {
         return content;
     }
 
+    /**
+     * 返回含向前搜索符的集合
+     * @return 含向前搜索符的集合 Set of Character
+     */
     public Set<Character> getForwardSearch() {
         return forwardSearch;
     }
 
+    /**
+     * 设置句子内容
+     * @param content 句子内容 String
+     */
     public void setContent(String content) {
         this.content = content;
     }
 
+    /**
+     * 设置含向前搜索符的集合
+     * @param forwardSearch 含向前搜索符的集合 Set of Character
+     */
     public void setForwardSearch(Set<Character> forwardSearch) {
         this.forwardSearch = forwardSearch;
     }
 
+    /**
+     * 返回产生式左部
+     *
+     * @return 产生式左部 Character
+     */
     public Character getStart() {
         return start;
     }
 
+    /**
+     * 返回产生式行数
+     *
+     * @return 产生式行数 int
+     */
     public int getProductionNumber() {
         return productionNumber;
     }

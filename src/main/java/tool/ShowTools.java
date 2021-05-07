@@ -16,8 +16,8 @@ public final class ShowTools {
     /**
      * Set输出
      *
-     * @param set 集合
-     * @param <T> 指定类型
+     * @param set 集合 Set of T
+     * @param <T> 指定类型 T
      */
     public static <T> void show(Set<T> set) {
         System.out.println("----set----------");
@@ -32,8 +32,8 @@ public final class ShowTools {
     /**
      * List输出
      *
-     * @param list 集合
-     * @param <T>  指定类型
+     * @param list 集合  List of T
+     * @param <T>  指定类型 T
      */
     public static <T> void show(List<T> list) {
         System.out.println("----list----------");
@@ -49,8 +49,8 @@ public final class ShowTools {
     /**
      * 二维数组输出
      *
-     * @param some 二维数组
-     * @param <T>  指定类型
+     * @param some 二维数组 T[][]
+     * @param <T>  指定类型 T
      */
     public static <T> void show(T[][] some) {
         System.out.println("----数组----------");
@@ -66,8 +66,8 @@ public final class ShowTools {
     /**
      * Stack输出
      *
-     * @param stack 栈
-     * @param <T>   指定类型
+     * @param stack 栈 Stack of T
+     * @param <T>   指定类型 T
      */
     public static <T> void show(Stack<T> stack) {
         System.out.println("----------stack---------------");
@@ -80,8 +80,8 @@ public final class ShowTools {
     /**
      * 输出单个元素
      *
-     * @param some 单个元素
-     * @param <T>  指定类型
+     * @param some 单个元素 T
+     * @param <T>  指定类型 T
      */
     public static <T> void show(T some) {
         System.out.println("----some----------");
@@ -89,6 +89,12 @@ public final class ShowTools {
         System.out.println("\n---------------");
     }
 
+    /**
+     * 返回孩子结点的表示
+     *
+     * @param children 孩子结点 List of TreeNode
+     * @return 孩子结点的表示 String
+     */
     public static String getQuaternion(List<TreeNode> children) {
         String res = "";
         for (int i = 0; i < children.size(); i++) {

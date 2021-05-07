@@ -48,15 +48,18 @@ class Token {
     private static final String[] typeDescription = {"算术运算符", "界符", "class", "d", "错误标识符", "for", "g", "h", "标识符",
             "j", "其他关键字", "逻辑运算符", "m", "注释", "o", "p", "q", "数字常量", "String常量", "类型", "未分类", "可视性", "while", "x", "y", "return"};
 
+    /**
+     * 构造器
+     */
     public Token() {
     }
 
     /**
      * 构造器
      *
-     * @param number  行号
-     * @param content 单词内容
-     * @param type    单词种类
+     * @param number  行号 int
+     * @param content 单词内容 String
+     * @param type    单词种类 char
      */
     public Token(int number, String content, char type) {
         this.number = number;
@@ -64,22 +67,46 @@ class Token {
         this.type = type;
     }
 
+    /**
+     * 返回 行号
+     * @return 行号 int
+     */
     public int getNumber() {
         return number;
     }
 
+    /**
+     * 返回单词内容
+     *
+     * @return 单词内容 String
+     */
     public String getContent() {
         return content;
     }
 
+    /**
+     * 返回单词种类
+     *
+     * @return 单词种类 char
+     */
     public char getType() {
         return type;
     }
 
+    /**
+     * 设置单词种类
+     *
+     * @param type 单词种类 char
+     */
     public void setType(char type) {
         this.type = type;
     }
 
+    /**
+     * 设置单词内容
+     *
+     * @param content 单词内容 String
+     */
     public void setContent(String content) {
         this.content = content;
     }
@@ -87,7 +114,7 @@ class Token {
     /**
      * 重写方法 便于输出
      *
-     * @return 该对象的信息
+     * @return 该对象的信息 String
      */
     @Override
     public String toString() {
@@ -120,19 +147,27 @@ public class Tokens {
     //界符常量
     private static final String[] boundaries = {"{", "}", "(", ")", "[", "]", ",", ";"};
 
+    /**
+     * 构造器
+     */
     public Tokens() {
         tokens = new LinkedList<Token>();
     }
 
+    /**
+     * 返回token信息集合
+     *
+     * @return token信息集合 LinkedList of Token
+     */
     public LinkedList<Token> getTokens() {
         return tokens;
     }
 
     /**
-     * 分离注释 //content type=7
+     * 分离注释 //content type=7<br>
      * 必须在分离关键字与界符之前
      *
-     * @param text 读入的文本
+     * @param text 读入的文本 List of ProcessLine
      */
     public void separateNote(List<ProcessLine> text) {
         for (ProcessLine pl : text) {
@@ -151,7 +186,7 @@ public class Tokens {
 
 
     /**
-     * 分离引号（String常量） "String constant" type=6
+     * 分离引号（String常量） "String constant" type=6<br>
      * 必须在分离关键字之前完成
      */
     public void separateString() {
@@ -177,8 +212,6 @@ public class Tokens {
                 if (!front.equals("")) tokens.add(i++, frontToken);
                 if (!back.equals("")) tokens.add(i, backToken);
                 i--;
-            } else {
-                continue;
             }
         }
     }
@@ -284,7 +317,7 @@ public class Tokens {
     }
 
     /**
-     * 分离运算符（除了+/-） type=3
+     * 分离运算符（除了+/-） type=3<br>
      * 必须在分离数字常量之前进行 否则无法分离如"3E+1 == 2+2i"
      */
     public void separateLogistic() {
@@ -293,8 +326,7 @@ public class Tokens {
             if (token.getType() != 'u') continue;
             for (String compare : logistic) {
                 if (token.getContent().contains(compare)) {
-                    String splitUnit = compare;
-                    String[] split = token.getContent().split("((?<=" + splitUnit + ")|(?=" + splitUnit + "))");
+                    String[] split = token.getContent().split("((?<=" + compare + ")|(?=" + compare + "))");
                     int index = tokens.indexOf(token);
                     tokens.remove(token);
                     i--;
@@ -312,7 +344,7 @@ public class Tokens {
     }
 
     /**
-     * 分离运算符（除了+/-） type=3
+     * 分离运算符（除了+/-） type=3<br>
      * 必须在分离数字常量之前进行 否则无法分离如"3E+1 == 2+2i"
      */
     public void separateArithmetic() {
@@ -344,8 +376,8 @@ public class Tokens {
     /**
      * 是否为数字
      *
-     * @param ch 需要判断的字符
-     * @return 是数字或者不是
+     * @param ch 需要判断的字符 char
+     * @return 是数字或者不是 boolean
      */
     public boolean isDigit(char ch) {
         return (ch >= '0' && ch <= '9');
@@ -354,8 +386,8 @@ public class Tokens {
     /**
      * 是否为实数（用了DFA） 格式：xx.xx
      *
-     * @param word 需要判断的单词
-     * @return 是否为实数
+     * @param word 需要判断的单词 String
+     * @return 是否为实数 boolean
      */
     public boolean isRealNumber(String word) {
         if (word.equals("")) return true;
@@ -373,14 +405,14 @@ public class Tokens {
     }
 
     /**
-     * 是否为数字（包括科学计数法和虚数）
-     * 此处并不考虑科学计数法与虚数的结合情况（语法分析内容）
-     * 如：（3E+1）+(2E-10)i 在此只会分隔成 (|3E+1|)|+|(|2E-10|)|i
-     * 科学计数法格式：xE+x/xE-x 通过E+或E-分割 判断分割后两侧是否均为实数
+     * 是否为数字（包括科学计数法和虚数）<br>
+     * 此处并不考虑科学计数法与虚数的结合情况（语法分析内容）<br>
+     * 如：（3E+1）+(2E-10)i 在此只会分隔成 (|3E+1|)|+|(|2E-10|)|i<br>
+     * 科学计数法格式：xE+x/xE-x 通过E+或E-分割 判断分割后两侧是否均为实数<br>
      * 虚数格式：xi/x+xi/x-xi 通过i与+/-判断
      *
-     * @param word 需要判断的单词
-     * @return 是否为数字
+     * @param word 需要判断的单词 String
+     * @return 是否为数字 boolean
      */
     public boolean isNumber(String word) {
         boolean res = false;
@@ -426,7 +458,7 @@ public class Tokens {
     }
 
     /**
-     * 分离+/- type=3
+     * 分离+/- type=3<br>
      * 必须在分离数字常量之后 可以保证3E+10是一个整体
      */
     public void separatePlusOrMinus() {
@@ -457,7 +489,7 @@ public class Tokens {
     }
 
     /**
-     * 分离点号 如System.out.println=>System|.|out|.|println
+     * 分离点号 如System.out.println=》System|.|out|.|println<br>
      * 必须在分离数字常量之后 否则无法保证如"3.14"的完整
      */
     public void separatePoint() {
@@ -483,10 +515,10 @@ public class Tokens {
     }
 
     /**
-     * 分离标识符（识别标识符）
+     * 分离标识符（识别标识符）<br>
      * 标识符符合文法则type=5 否则type=8
      *
-     * @param lexerDFA 文法
+     * @param lexerDFA 文法 LexerDFA
      */
     public void separateIdentifier(LexerDFA lexerDFA) {
         for (int i = 0; i < tokens.size(); i++) {
@@ -501,12 +533,12 @@ public class Tokens {
     /**
      * 按分类展示
      *
-     * @return String 便于Frame输出
+     * @return 便于Frame输出 String
      */
     public String showByClass() {
-        String res="";
-        res+="*************CLASS**************\n";
-        res+="---------keywords----------";
+        StringBuilder res= new StringBuilder();
+        res.append("*************CLASS**************\n");
+        res.append("---------keywords----------");
         for (Token token : tokens) {
             switch (token.getType()) {
                 case 'c':
@@ -517,61 +549,61 @@ public class Tokens {
                 case 't':
                 case 'v':
                 case 'w':
-                    res+=(token.toString()+"\n");
+                    res.append(token.toString()).append("\n");
                     break;
                 default:
             }
         }
         System.out.println("---------boundaries----------");
         for (Token token : tokens) {
-            if (token.getType() == 'b') res+=(token.toString()+"\n");
+            if (token.getType() == 'b') res.append(token.toString()).append("\n");
         }
         System.out.println("---------operators----------");
         for (Token token : tokens) {
             if (token.getType() == 'a' || token.getType() == 'l')
-                res+=(token.toString()+"\n");
+                res.append(token.toString()).append("\n");
         }
         System.out.println("---------numbers----------");
         for (Token token : tokens) {
-            if (token.getType() == 'r') res+=(token.toString()+"\n");
+            if (token.getType() == 'r') res.append(token.toString()).append("\n");
         }
         System.out.println("---------identifiers----------");
         for (Token token : tokens) {
-            if (token.getType() == 'i') res+=(token.toString()+"\n");
+            if (token.getType() == 'i') res.append(token.toString()).append("\n");
         }
         System.out.println("---------\"****\"----------");
         for (Token token : tokens) {
-            if (token.getType() == 's') res+=(token.toString()+"\n");
+            if (token.getType() == 's') res.append(token.toString()).append("\n");
         }
         System.out.println("---------//----------");
         for (Token token : tokens) {
-            if (token.getType() == 'n') res+=(token.toString()+"\n");
+            if (token.getType() == 'n') res.append(token.toString()).append("\n");
         }
         System.out.println("---------wrong----------");
         for (Token token : tokens) {
-            if (token.getType() == 'e') res+=(token.toString()+"\n");
+            if (token.getType() == 'e') res.append(token.toString()).append("\n");
         }
         System.out.println("---------unclassified----------");
         for (Token token : tokens) {
-            if (token.getType() == 'u') res+=(token.toString()+"\n");
+            if (token.getType() == 'u') res.append(token.toString()).append("\n");
         }
-        res+="\n";
-        return res;
+        res.append("\n");
+        return res.toString();
     }
 
     /**
      * 按输入序列展示
      *
-     * @return String 便于Frame输出
+     * @return 便于Frame输出 String
      */
     public String showBySequence() {
-        String res="";
+        StringBuilder res= new StringBuilder();
         //res+="*************SEQUENCE**************\n";
         for (Token token : tokens) {
-            res+=(token.toString()+"\n");
+            res.append(token.toString()).append("\n");
         }
-        res+="\n";
-        return res;
+        res.append("\n");
+        return res.toString();
     }
 
 }

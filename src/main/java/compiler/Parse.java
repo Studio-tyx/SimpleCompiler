@@ -18,10 +18,9 @@ public class Parse {
      * @param grammar 语法
      * @param code    代码
      * @return ParseResult
-     * @throws IOException    文件读写异常
      * @throws TYXException 语法格式异常
      */
-    public ParseResult run(Text grammar, Tokens code) throws IOException, TYXException {
+    public ParseResult run(Text grammar, Tokens code) throws TYXException {
         ParseResult res;
         ParseDFA parseDFA = new ParseDFA();
         parseDFA.createGraph(grammar);
