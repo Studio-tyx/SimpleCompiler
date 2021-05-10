@@ -52,10 +52,10 @@ public class LexerNFA {
         boolean isLeft = true, isRight = true;
         for (ProcessLine processLine : text.getContent()) {
             String line = processLine.getLine();
-            if (line.length() == 4) {
+            if (line.length() == 4) {   //A->a
 
             } else if (line.length() == 5) {
-                if (CharacterTools.isLower(line.charAt(3)) || CharacterTools.isAt(line.charAt(3))) {
+                if (CharacterTools.isLower(line.charAt(3)) || CharacterTools.isAt(line.charAt(3))) {    //我定义了A->@B的词法
                     isLeft = false;
                 } else {
                     isRight = false;
@@ -91,16 +91,16 @@ public class LexerNFA {
             boolean isLegal = false;
             if (line.contains("->")) {
                 String[] afterSplit = line.split("->");
-                String former = afterSplit[0], latter = afterSplit[1];
+                String former = afterSplit[0], latter = afterSplit[1];  //分离
                 if (former.length() == 1) {
                     if (CharacterTools.isUpper(former.charAt(0))) {
-                        if (latter.length() == 1) {
+                        if (latter.length() == 1) { //A->a
                             if (CharacterTools.isLower(latter.charAt(0)) || CharacterTools.isAt(latter.charAt(0))) {
                                 isLegal = true;
-                                graph.addEdge(former.charAt(0), '$', latter.charAt(0));
+                                graph.addEdge(former.charAt(0), '$', latter.charAt(0)); //$是终态
                                 if (latter.charAt(0) != '@') terminals.add(latter.charAt(0));
                             }
-                        } else if (latter.length() == 2) {
+                        } else if (latter.length() == 2) {  //A->aB
                             if ((CharacterTools.isLower(latter.charAt(0)) || CharacterTools.isAt(latter.charAt(0))) && CharacterTools.isUpper(latter.charAt(1))) {
                                 isLegal = true;
                                 graph.addEdge(former.charAt(0), latter.charAt(1), latter.charAt(0));

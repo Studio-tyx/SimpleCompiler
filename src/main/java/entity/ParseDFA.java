@@ -61,21 +61,21 @@ public class ParseDFA {
      */
     public void createGraph(Text text) {
         //初始化
-        this.text = text;
-        this.graph = new LinkGraph<Set<LRLine>, Character>();
-        this.status = new ArrayList<Set<LRLine>>();
+        this.text = text;   //语法
+        this.graph = new LinkGraph<Set<LRLine>, Character>();   //图结构
+        this.status = new ArrayList<Set<LRLine>>(); //状态集合
 
         //初态
         Set<Character> tmpSet = new HashSet<Character>();
-        tmpSet.add('#');
-        LRLine firstLR = new LRLine('%', "·S", tmpSet, 0);
+        tmpSet.add('#');    //向前搜索符初始为#
+        LRLine firstLR = new LRLine('%', "·S", tmpSet, 0);  //%->·S,#
         Set<LRLine> lrLineSet = new HashSet<LRLine>();
-        lrLineSet.add(firstLR);
-        lrLineSet = closure(lrLineSet);
-        status.add(lrLineSet);
+        lrLineSet.add(firstLR); //初态
+        lrLineSet = closure(lrLineSet); //求闭包
+        status.add(lrLineSet);  //加入状态集
 
-        for (int i = 0; i < status.size(); i++) {
-            Set<LRLine> set = status.get(i);
+        for (int i = 0; i < status.size(); i++) {   //没有用foreach:status.add会异常
+            Set<LRLine> set = status.get(i);    //对于每个状态
             if (!moveEnd(set)) {    //集合中的所有元素没有都结束（还有句子需要移动）
                 for (Character character : findNextMove(set)) { //下一个字符作为加入边
                     Set<LRLine> newSet = findNextStatus(set, character);    //找下一个集合
@@ -113,7 +113,7 @@ public class ParseDFA {
 
     /**
      * 求向前搜索符<br>
-     * 项目[A-》α.Bβ,a]，当β能导出空串时，该项目的搜索符a传播到项目[B-》…,a]<br>
+     * 项目[A-》α.Bβ,a]，当β能导出空串时，该项目A的搜索符a传播到项目[B-》…,a]<br>
      * 当β不能导出空串时，搜索符为first(βa)<br>
      * 上述关于空串的推导方法来源于 https://blog.csdn.net/qq_41734797/article/details/93253915
      *
@@ -129,16 +129,16 @@ public class ParseDFA {
         } else {
             for (int i = index + 2; i < original.length(); i++) {
                 if (canBeNUll(original.charAt(i))) {//-> a b @ /->@
-                    if (!isAllNUll(original.charAt(i))) {//->a b @
+                    if (!isAllNUll(original.charAt(i))) {//->a b @ （能导出空串但不是只能导出空串）
                         res.addAll(findFirst(original.substring(i)));
                     }
                 } else {//->a b
-                    res.addAll(findFirst(original.substring(i)));
+                    res.addAll(findFirst(original.substring(i)));   //first(xxx)
                     return res;
                 }
             }
         }
-        res.addAll(lrLine.getForwardSearch());//->@
+        res.addAll(lrLine.getForwardSearch());//->@ （只要可以导出空 就加前辈的）
         return res;
     }
 
@@ -282,7 +282,7 @@ public class ParseDFA {
                 if (lrLine.getContent().length() == index + 1) continue;    //到底了
 
                 Character next = lrLine.getContent().charAt(index + 1); //在点之后的字符 如"A·a"中的a
-                if (CharacterTools.isUpper(next)) { //如果是非终结符
+                if (CharacterTools.isUpper(next)) { //如果是非终结符 ·A需要加入A开头的句子
                     List<ProcessLine> newLines = text.getStartWith(next);   //在语法中寻找以该非终结符开始的句子
                     for (ProcessLine processLine : newLines) {
                         LRLine newLine = new LRLine(processLine);

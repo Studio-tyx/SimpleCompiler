@@ -3,8 +3,6 @@ package compiler;
 import entity.*;
 import exception.TYXException;
 
-import java.io.IOException;
-
 /**
  * @author TYX
  * @name Parse
@@ -27,8 +25,8 @@ public class Parse {
         ParseGoto parseGoto = new ParseGoto();
         parseGoto.init(grammar);
         parseGoto.createGoto(parseDFA);
-        GOTO gotoTable=parseGoto.getGotoTable();
-        res= parseGoto.check(code);
+        GOTO gotoTable = parseGoto.getGotoTable();
+        res = parseGoto.check(code);
         res.setGotoTable(gotoTable);
         //res.show();
         return res;
@@ -43,12 +41,12 @@ public class Parse {
      */
     public GOTO createGoto(Text grammar) throws TYXException {
         GOTO gotoTable;
-        ParseDFA parseDFA=new ParseDFA();
+        ParseDFA parseDFA = new ParseDFA();
         parseDFA.createGraph(grammar);  //创建语法图
-        ParseGoto parseGoto=new ParseGoto();
+        ParseGoto parseGoto = new ParseGoto();
         parseGoto.init(grammar);    //语法初始化
         parseGoto.createGoto(parseDFA); //创建Goto表
-        gotoTable=parseGoto.getGotoTable(); //返回
+        gotoTable = parseGoto.getGotoTable(); //返回
         return gotoTable;
     }
 }

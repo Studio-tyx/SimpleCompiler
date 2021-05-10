@@ -130,11 +130,11 @@ public class ParseGoto {
         Stack<Character> characters = new Stack<Character>();   //符号栈
         List<TreeNode> treeNodes = new ArrayList<TreeNode>();   //现有的语法树（或语法子树）
         int countTemp = 0;  //临时变量计数器
-        List<ParseResult.Line> lines=new ArrayList<ParseResult.Line>();
-        List<String> quaternions=new ArrayList<String>();
+        List<ParseResult.Line> lines=new ArrayList<ParseResult.Line>(); //分析栈
+        List<String> quaternions=new ArrayList<String>();   //四元式
         List<Character> terminals= gotoTable.getTerminals();  //终结符集合
         List<Character> nonTerminals= getGotoTable().getNonTerminals();   //非终结符集合
-        StringBuilder information= new StringBuilder();
+        StringBuilder information= new StringBuilder(); //分析信息
 
         //初态
         status.push(0);
@@ -154,117 +154,111 @@ public class ParseGoto {
             else thisChar = token.getType();    //其他符号都是以type区分的
 
             Integer nowStatus = status.peek();  //当前状态
-            String next=gotoTable.getByChar(nowStatus,thisChar);
+            String next=gotoTable.getByChar(nowStatus,thisChar);    //下一状态
 
             StringBuilder stackChar= new StringBuilder();
             StringBuilder stackStatus= new StringBuilder();
             String stackNext="";
             String stackAction="";
+
             //输出
-            for (Character ch : characters) {
+            for (Character ch : characters) {   //分析栈
                 stackChar.append(ch);
             }
-            for (Integer integer : status) {
+            for (Integer integer : status) {    //状态栈
                 stackStatus.append(integer).append(",");
             }
-            stackNext=thisChar.toString();
+            stackNext=thisChar.toString();  //下一字符
 
             if (next.charAt(0) == 'S') {    //移进
                 characters.push(thisChar);  //符号栈压入
                 status.push(Integer.valueOf(next.substring(1)));    //状态栈压入
                 stackAction="移进";
-                lines.add(new ParseResult.Line(stackChar.toString(), stackStatus.toString(),stackNext,stackAction));
+                lines.add(new ParseResult.Line(stackChar.toString(), stackStatus.toString(),stackNext,stackAction));    //动作
 
                 //新建语法树节点并加入语法森林
                 TreeNode newNode;
-                if(thisChar=='i'){
-                    newNode = new TreeNode(token.getContent());
-                }
-                else {
-                    newNode = new TreeNode(thisChar.toString());
-                }
+                if(thisChar=='i') newNode = new TreeNode(token.getContent());   //标识符以原值新建
+                else newNode = new TreeNode(thisChar.toString());   //其他都是以类型新建
                 treeNodes.add(newNode);
+
             } else if (next.charAt(0) == 'r') { //规约
                 ProcessLine processLine = text.getContent().get(Integer.parseInt(next.substring(1)) - 1);   //根据r后的数字选择产生式规约
-                String start = processLine.getLine().split("#")[0].substring(0, 1);
-                String production = processLine.getLine().split("#")[0].substring(3);
+                String start = processLine.getLine().split("#")[0].substring(0, 1); //消除语义规则影响
+                String production = processLine.getLine().split("#")[0].substring(3);   //消除语义规则影响
                 stackAction="规约 "+start+"->"+production;
-                lines.add(new ParseResult.Line(stackChar.toString(), stackStatus.toString(),stackNext,stackAction));
+                lines.add(new ParseResult.Line(stackChar.toString(), stackStatus.toString(),stackNext,stackAction));    //动作
 
 
                 List<TreeNode> children = new ArrayList<TreeNode>();    //子树
                 if (!production.equals("@")) {  //非空字符则按长度弹栈
                     for (int j = production.length() - 1; j >= 0; j--) {
                         status.pop();   //状态栈弹栈
-                        Character topChar = characters.pop();
+                        Character topChar = characters.pop();   //字符栈弹栈
                         if (production.charAt(j) != topChar) {  //符号栈弹栈不相等则报错
                             throw new TYXException("Input grammar error:Stack error!");
                         }
                     }
                     for (int m = treeNodes.size() - production.length(); m < treeNodes.size(); ) {  //构建子树
                         TreeNode newNode = treeNodes.get(m);
-                        treeNodes.remove(m);
-                        children.add(newNode);
+                        treeNodes.remove(m);    //当前森林取出子树
+                        children.add(newNode);  //构建子树加入语法树
                     }
                 }
                 nowStatus = status.peek();  //状态栈弹栈后的下一状态
-//                status.push(Integer.valueOf(Goto[nowStatus][(nonTerminals.indexOf(start.charAt(0)) + terminals.size())]));  //转移至下一状态
                 status.push(Integer.valueOf(gotoTable.getByInt(nowStatus,(nonTerminals.indexOf(start.charAt(0)) + terminals.size()))));  //转移至下一状态
                 Character first = start.charAt(0);  //产生式左部
-                characters.push(first); //压入产生式左部
+                characters.push(first); //将产生式左部压入字符栈
 
+                //规约时需要考虑语义分析
                 TreeNode newNode = new TreeNode(first.toString(), children);    //构建子树
                 if (processLine.getLine().contains("#")) {  //有语义分析的内容
                     StringBuilder quaternion= new StringBuilder();
                     String semantic = processLine.getLine().split("#")[1];  //分离语义分析内容
-                    if (semantic.equals("transmit")) {  //值传递
+                    if (semantic.equals("transmit")) {  //值传递 定义为一定是将值从（唯一的）孩子结点传递给父亲结点
                         if (production.contains("(")) newNode.setValue(children.get(1).getValue());
                         else newNode.setValue(children.get(0).getValue());
-                    } else if (semantic.contains("real")) { //真值
-                        Character ch = semantic.charAt(semantic.indexOf("real") - 2);
+                    } else if (semantic.contains("real")) { //真值初始化
+                        Character ch = semantic.charAt(semantic.indexOf("real") - 2);   //谁的真值
                         Integer integer = Integer.valueOf(ch);
-                        children.get(integer - 49).setValue(tokens.getTokens().get(i - 1).getContent());
-                        newNode.setValue(tokens.getTokens().get(i - 1).getContent());
-                    } else if (semantic.contains("value") && children.size() >= 3) {
-                        newNode.setValue("T" + countTemp);
-                        countTemp++;
-                    } else if (semantic.contains("assign")) {   //赋值
+                        children.get(integer - 49).setValue(tokens.getTokens().get(i - 1).getContent());    //找孩子结点位置 0/1/2
+                        newNode.setValue(tokens.getTokens().get(i - 1).getContent());   //父亲节点置值
+                    } else if (semantic.contains("value") && children.size() >= 3) {    //运算 有临时变量
+                        newNode.setValue("T" + countTemp);  //父亲结点设置临时变量
+                        countTemp++;    //临时变量++
+                    } else if (semantic.contains("assign")) {   //赋值（语法规定为X->X=A;） 赋值语句必输出四元式
                         quaternion.append(":=\t");
-                        TreeNode child = children.get(2);
-                        if (child.getValue() == null) quaternion.append(child.getName()).append("\t_\t");
-                        else quaternion.append(child.getValue()).append("\t_\t");
-                        quaternion.append(children.get(0).getName());
-
+                        TreeNode child = children.get(2);   //A
+                        if (child.getValue() == null) quaternion.append(child.getName()).append("\t_\t");   //孩子结点没有真值初始化
+                        else quaternion.append(child.getValue()).append("\t_\t");   //已经赋了初值
+                        quaternion.append(children.get(0).getName());   //父节点X
                     }
                     if (semantic.contains("print")) {   //打印
-                        if (semantic.contains("=") || production.contains(";")) quaternion.append(":=\t");
                         for (TreeNode tn : children) {
-                            if (tn.getValue() == null) {
-                                if (!tn.getName().equals("=")) quaternion.append(tn.getName()).append("\t");
-                            }
+                            if (tn.getValue() == null)  quaternion.append(tn.getName()).append("\t");   //符号
                         }
                         for (TreeNode tn : children) {
-                            if (tn.getValue() != null && !tn.getName().equals("="))
-                                quaternion.append(tn.getValue()).append("\t");
+                            if (tn.getValue() != null)  quaternion.append(tn.getValue()).append("\t");  //两个操作数
                         }
-                        if (children.size() < 2) quaternion.append("_\t");
-                        quaternion.append(newNode.getValue()).append("\t");
+                        if (children.size() < 2) quaternion.append("_\t");  //少了一个操作数
+                        quaternion.append(newNode.getValue()).append("\t"); //父节点
                     }
                     newNode.setChildren(children);
                     //quaternion+="\n";
-                    if(!quaternion.toString().equals(""))  quaternions.add(quaternion.toString());
+                    if(!quaternion.toString().equals(""))  quaternions.add(quaternion.toString());  //没有需要输出的四元式
                 }
-                treeNodes.add(newNode);
+
+                treeNodes.add(newNode); //新子树
                 continue;
             } else if (next.equals("acc")) res = true;  //结束了啊
-            else {  //基本是出错的
+            else {  //异常 “期待的下一字符：”
                 for(int ii=0;ii<terminals.size()+nonTerminals.size();ii++){
                     if(!gotoTable.getByInt(nowStatus,ii).equals("n")){
                         if(ii<terminals.size()) information.append(terminals.get(ii)).append(",");
                         else information.append(nonTerminals.get(ii - terminals.size())).append(",");
                     }
                 }
-                break;
+                break;  //异常直接退出了
             }
             i++;    //下一token
         }

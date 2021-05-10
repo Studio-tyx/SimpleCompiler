@@ -75,7 +75,7 @@ public class Lexer {
      */
     public List<String> getDFA(Text grammar) throws TYXException {
         LexerNFA lexerNFA = new LexerNFA();
-        LexerDFA lexerDFA=new LexerDFA();
+        LexerDFA lexerDFA = new LexerDFA();
         lexerNFA.init(grammar);
         return lexerDFA.init(lexerNFA);
     }

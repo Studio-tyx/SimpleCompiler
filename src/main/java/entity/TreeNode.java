@@ -9,8 +9,8 @@ import java.util.List;
  * @createTime 2021/4/2 16:33
  **/
 public class TreeNode {
-    private final String name;
-    private String value;
+    private final String name;  //语法的值
+    private String value;   //真实的值
     private List<TreeNode> children;
 
     /**

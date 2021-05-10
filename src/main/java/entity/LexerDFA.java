@@ -35,8 +35,8 @@ public class LexerDFA {
      */
     public List<String> init(LexerNFA lexerNFA) {
         List<Set<Character>> statusMap = new ArrayList<Set<Character>>();   //DFA状态与NFA子集的对应关系 int<->set<Character>
-        terminals = new HashSet<Integer>();
-        terminalLink = new ArrayList<Character>();
+        terminals = new HashSet<Integer>(); //DFA的终态
+        terminalLink = new ArrayList<Character>();  //NFA终结符与DFA终结符的对应关系（NFA终结符为character DFA为便于数组寻数 类型为int）
 
         //NFA终结符与DFA状态转移矩阵表头的对应关系初始化
         for (Object ch : lexerNFA.getTerminals()) {
@@ -44,22 +44,22 @@ public class LexerDFA {
         }
 
         //初态T0
-        matrix = new int[101][terminalLink.size()];
+        matrix = new int[101][terminalLink.size()]; //最多101个状态
         Set<Character> start = new HashSet();
-        start.add(lexerNFA.getFirstElement());
-        start = lexerNFA.closure(start);
-        statusMap.add(start);
+        start.add(lexerNFA.getFirstElement());  //初态
+        start = lexerNFA.closure(start);    //初态closure
+        statusMap.add(start);   //DFA+初态
         for (Character ch : start) {
-            if (ch == lexerNFA.getFinalStatus()) terminals.add(statusMap.indexOf(start));
+            if (ch == lexerNFA.getFinalStatus()) terminals.add(statusMap.indexOf(start));   //判断是否为终态
         }
 
         int maxStatus = 0;  //DFA总状态数
-        for (int i = 0; i <= maxStatus; i++) {
-            Iterator<Character> it = lexerNFA.getTerminals().iterator();
+        for (int i = 0; i <= maxStatus; i++) {  //对于当前的所有状态 有增加状态会异常 所以没有用foreach
+            Iterator<Character> it = lexerNFA.getTerminals().iterator();    //对于所有终结符
             while (it.hasNext()) {
                 Character character = it.next();
                 Set<Character> newSet = lexerNFA.findNext(statusMap.get(i), character);  //找closure
-                if (newSet.isEmpty()) {
+                if (newSet.isEmpty()) { //下一状态为空
                     addEdge(i, -1, terminalLink.indexOf(character));
                     continue;
                 }
@@ -67,7 +67,7 @@ public class LexerDFA {
                 boolean existStatus = false;
                 for (int status = 0; status < statusMap.size(); status++) { //遍历已有的状态
                     if (statusMap.get(status).equals(newSet)) { //已经存在状态
-                        addEdge(i, status, terminalLink.indexOf(character));    //状态转移矩阵加边
+                        addEdge(i, status, terminalLink.indexOf(character));    //状态转移矩阵加边（覆盖原有边）
                         existStatus = true;
                     }
                 }
@@ -75,9 +75,9 @@ public class LexerDFA {
                     statusMap.add(newSet);  //新增状态
                     addEdge(i, statusMap.indexOf(newSet), terminalLink.indexOf(character)); //状态转移矩阵加边
                     for (Character DFAElement : newSet) {
-                        if (DFAElement == lexerNFA.getFinalStatus()) {   //DFA终态新增
-                            terminals.add(statusMap.indexOf(newSet));
-                            break;
+                        if (DFAElement == lexerNFA.getFinalStatus()) {  //是终态
+                            terminals.add(statusMap.indexOf(newSet));   //DFA终态新增
+                            break;  //有一个状态是终态就可以了
                         }
                     }
                     maxStatus++;
@@ -97,14 +97,14 @@ public class LexerDFA {
      */
     public boolean check(String word) {
         int status = 0;
-        for (int i = 0; i < word.length(); i++) {
+        for (int i = 0; i < word.length(); i++) {   //对于标识符的每一字符
             Character character = word.charAt(i);
-            if (!terminalLink.contains(character)) return false;
-            status = matrix[status][terminalLink.indexOf(character)];
-            if (status == -1) return false;
+            if (!terminalLink.contains(character)) return false;    //不含此终结符
+            status = matrix[status][terminalLink.indexOf(character)];   //下一状态
+            if (status == -1) return false; //无效状态（Matrix初始值为-1）
         }
         for (Integer t : terminals) {
-            if (status == t) return true;
+            if (status == t) return true;   //状态在终态中
         }
         return false;
     }
