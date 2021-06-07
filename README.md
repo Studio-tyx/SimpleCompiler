@@ -21,7 +21,8 @@
 （8）semanticGrammar1是比较基本的语义规则，在#之后即为语义规则，如果有print则输出四元式。  
 #### 4.javadoc：
  可进入路径：\javadoc\index.html查看本项目的javadoc。  
-#### 5.具体使用方法请查看“代码说明文档”\<br>
+#### 5.代码说明文档：
+ 该文档说明了本编译器的使用方法。
 ### （二）部分效果展示
 #### 1.词法分析结果
 ![image](https://user-images.githubusercontent.com/61185595/121019651-38817580-c7d2-11eb-9b11-e115a2cc75e7.png)
